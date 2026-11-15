@@ -1,0 +1,28 @@
+{
+  "name": "nasa-space-apps-flame-in-freefall",
+  "version": "1.0.0",
+  "description": "IGNIS // FREEFALL — NASA Space Apps Challenge: Microgravity Combustion Informatics & Spaceflight Fire Safety Platform",
+  "private": true,
+  "main": "main page/-FREEFALL-—-NASA-PSI-Fire-Safety-AI/server.js",
+  "scripts": {
+    "postinstall": "npm --prefix \"main page/-FREEFALL-—-NASA-PSI-Fire-Safety-AI\" install",
+    "build": "npm --prefix \"main page/-FREEFALL-—-NASA-PSI-Fire-Safety-AI\" install && npm --prefix \"main page/-FREEFALL-—-NASA-PSI-Fire-Safety-AI\" run build",
+    "start": "npm --prefix \"main page/-FREEFALL-—-NASA-PSI-Fire-Safety-AI\" start"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "nasa",
+    "space-apps-challenge",
+    "microgravity-combustion",
+    "fire-safety",
+    "iss",
+    "freefall",
+    "threejs",
+    "react",
+    "gemini-ai"
+  ],
+  "author": "Team Infonic",
+  "license": "MIT"
+}

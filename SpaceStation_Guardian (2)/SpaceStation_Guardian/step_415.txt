@@ -1,0 +1,43 @@
+Created At: 2026-11-15T03:19:06+05:30
+Completed At: 2026-11-15T03:19:06+05:30
+File Path: `file:///c:/Users/SHOURYA%20SHARMA/OneDrive/SpaceStation_Guardian/space-station-guardian/frontend/src/App.jsx`
+Total Lines: 2320
+Total Bytes: 89849
+Showing lines 1 to 35
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+2: import { Canvas, useFrame, useThree } from '@react-three/fiber';
+3: import { Center, OrbitControls, Stars, useGLTF } from '@react-three/drei';
+4: import * as THREE from 'three';
+5: import {
+6:   Activity,
+7:   AlertTriangle,
+8:   Atom,
+9:   Box,
+10:   Camera,
+11:   ChevronDown,
+12:   CircleHelp,
+13:   Crosshair,
+14:   Flame,
+15:   Gauge,
+16:   Layers3,
+17:   Maximize2,
+18:   Minimize2,
+19:   Orbit,
+20:   Pause,
+21:   Play,
+22:   RotateCcw,
+23:   Shield,
+24:   Sparkles,
+25:   Thermometer,
+26:   Video,
+27:   Volume2,
+28:   VolumeX,
+29:   Wind,
+30:   Zap,
+31: } from 'lucide-react';
+32: 
+33: // Preload 3D models into memory
+34: useGLTF.preload('/models/iss.glb');
+35: useGLTF.preload('/models/scene.gltf');
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

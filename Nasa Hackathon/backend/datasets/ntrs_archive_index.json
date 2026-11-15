@@ -1,0 +1,36 @@
+{
+  "catalog_name": "NASA Physical Sciences Informatics (PSI) Combustion Archive",
+  "challenge": "NASA Space Apps Challenge 2026: Flame in Freefall",
+  "investigations": [
+    {
+      "id": "FLEX-1",
+      "title": "Flame Extinction Experiment - 1",
+      "facility": "ISS Combustion Integrated Rack (CIR)",
+      "doi": "10.2514/1.B34827",
+      "pi": "Forman A. Williams (UC San Diego)",
+      "fuel": "Heptane, Methanol",
+      "observations": "Discovery of quasi-steady low-temperature cool flames in microgravity",
+      "dataset_file": "flex_iss_droplet.csv"
+    },
+    {
+      "id": "ZERO-G-DT",
+      "title": "NASA GRC 2.2-Second Drop Tower Spherical Kinetics",
+      "facility": "NASA Glenn Research Center Zero-G Facility",
+      "doi": "10.1016/j.combustflame.2014.07.019",
+      "pi": "David L. Urban (NASA GRC)",
+      "fuel": "Methane / Air",
+      "observations": "Spherical flame front propagation without buoyant convective plume",
+      "dataset_file": "drop_tower_methane.csv"
+    },
+    {
+      "id": "ACME-CFL",
+      "title": "Coflow Laminar Diffusion Flame",
+      "facility": "ISS Combustion Integrated Rack (CIR)",
+      "doi": "10.1016/j.proci.2018.06.182",
+      "pi": "Peter B. Sunderland (Univ. of Maryland)",
+      "fuel": "Diluted Ethylene / Methane",
+      "observations": "Soot inception limits and radiation-driven flame extinction",
+      "dataset_file": "acme_iss_coflow.csv"
+    }
+  ]
+}

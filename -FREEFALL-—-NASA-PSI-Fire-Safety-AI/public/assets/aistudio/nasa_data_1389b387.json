@@ -1,0 +1,82 @@
+[
+  {
+    "id": "NTRS-20210011521",
+    "name": "SIBAL Cotton-Fiberglass Concurrent Flame Spread (ISS μg)",
+    "category": "Prevention",
+    "fuelType": "Solid (SIBAL Fabric)",
+    "hardware": "ISS Saffire / BASS Flow Duct",
+    "oxygenRange": "21.6% O₂ (100 kPa, 20 cm/s)",
+    "keyFinding": "Observed sustained spread with a steady limiting flame size under 20 cm/s concurrent ventilation airflow in microgravity (~0 g).",
+    "earthSpinOff": "Establishes composite liner flammability bounds for commercial aircraft cabins."
+  },
+  {
+    "id": "NTRS-20150008962",
+    "name": "Low-O₂ Quenching Boundary for SIBAL Fabric",
+    "category": "Prevention",
+    "fuelType": "Solid (SIBAL Fabric)",
+    "hardware": "Microgravity Science Glovebox (BASS)",
+    "oxygenRange": "16.4% O₂ (101.3 kPa, 10 cm/s)",
+    "keyFinding": "Observed no spread / no ignition—hot-wire igniter could not establish a self-sustaining flame at 16.4% oxygen and 10 cm/s concurrent flow.",
+    "earthSpinOff": "Defines hypoxic fire-prevention atmospheres for sealed server vaults."
+  },
+  {
+    "id": "PSI-BASS-02",
+    "name": "BASS-II: Solid Fuel Geometry & Airflow Velocity",
+    "category": "Prevention",
+    "fuelType": "Solid (PMMA & Cotton)",
+    "hardware": "Microgravity Science Glovebox (MSG)",
+    "oxygenRange": "18% - 30% O₂",
+    "keyFinding": "Thin fabrics and acrylic polymers propagate flames exponentially faster when cabin HVAC ventilation fans blow between 10 and 35 cm/s.",
+    "earthSpinOff": "Upgrades flammability testing for firefighter turnout gear and submarines."
+  },
+  {
+    "id": "PSI-SAF-04",
+    "name": "Saffire-IV: Large-Scale Artemis Elevated Oxygen Test",
+    "category": "Prevention",
+    "fuelType": "Solid (PMMA, Nomex, Ultem)",
+    "hardware": "Cygnus Cargo Spacecraft",
+    "oxygenRange": "26% - 30% O₂ (70 - 101 kPa)",
+    "keyFinding": "Demonstrated that operating lunar habitats at 30% oxygen spikes flame spread rates by >40% and requires immediate HVAC fan shutdown on alarm.",
+    "earthSpinOff": "Improves material safety inside hospital hyperbaric and oxygen-therapy wards."
+  },
+  {
+    "id": "PSI-FLEX-02",
+    "name": "FLEX-2: Invisible 'Cool Flames' Discovery",
+    "category": "Detection",
+    "fuelType": "Liquid (Heptane / Decane)",
+    "hardware": "Combustion Integrated Rack (CIR)",
+    "oxygenRange": "21% O₂ (101.3 kPa)",
+    "keyFinding": "Liquid droplets extinguish visibly at ~3000K but continue burning invisibly at ~600K ('cool flames'), generating carbon monoxide and risking sudden reignition.",
+    "earthSpinOff": "Drives cleaner, knock-free homogeneous charge compression ignition (HCCI) engines."
+  },
+  {
+    "id": "PSI-SAME-02",
+    "name": "SAME-R: Microgravity Smoke Agglomeration",
+    "category": "Detection",
+    "fuelType": "Solid (Kapton, Teflon, Cotton)",
+    "hardware": "Microgravity Science Glovebox (MSG)",
+    "oxygenRange": "21% O₂ (101.3 kPa)",
+    "keyFinding": "Without buoyant convection, smoke does not rise to ceilings; particles coagulate into large chains that require duct-mounted optical scatter detectors.",
+    "earthSpinOff": "Reduces false alarms in semiconductor cleanrooms and underground mines."
+  },
+  {
+    "id": "PSI-FLEX-01",
+    "name": "FLEX: Inert Gas Dilution & Fine-Water-Mist Suppression",
+    "category": "Suppression",
+    "fuelType": "Liquid & Solid",
+    "hardware": "Combustion Integrated Rack (CIR)",
+    "oxygenRange": "15% - 21% O₂",
+    "keyFinding": "Pinpointed exact CO₂ dilution and Fine-Water-Mist droplet sizes required to cool spherical microgravity reaction zones without scattering fuel.",
+    "earthSpinOff": "Powers non-destructive fire suppression for high-voltage data centers."
+  },
+  {
+    "id": "PSI-ACME-02",
+    "name": "ACME CFI-G: High-Oxygen Gas Cool Flames",
+    "category": "Prevention",
+    "fuelType": "Gas (Methane / Propane)",
+    "hardware": "Combustion Integrated Rack (CIR)",
+    "oxygenRange": "21% - 85% O₂",
+    "keyFinding": "Proved gaseous hydrocarbons also exhibit low-temperature cool-flame regimes and wide flammability bounds when methane leaks mix with enriched oxygen.",
+    "earthSpinOff": "Secures high-pressure industrial natural gas and hydrogen pipelines."
+  }
+]

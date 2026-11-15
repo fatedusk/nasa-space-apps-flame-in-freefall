@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment and sensitive keys
+.env
+.env*
+*.env
+env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Large binary files exceeding GitHub 100MB limit
+*.bin
+**/models/scene.bin
+**/temp_extract/
+
+# Build caches & agent metadata
+.gemini/
+.antigravity/
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db

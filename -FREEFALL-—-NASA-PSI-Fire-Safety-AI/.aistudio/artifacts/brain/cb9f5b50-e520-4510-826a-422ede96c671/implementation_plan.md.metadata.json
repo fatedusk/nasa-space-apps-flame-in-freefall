@@ -1,0 +1,6 @@
+{
+  "summary":  "Revised implementation plan: Replace the complex \"NASA Hybrid AI & UI Action Agent\" entirely with a 100% focused, friendly Astronaut Chatbot (\"AstroChat\") powered by Gemini with search grounding for everyday and space curiosity questions, leaving the rest of the application (ML Predictor, 2D Phase Map, 48 PSI runs, NTRS Vault, Dossier Modal, AI settings) completely untouched.",
+  "updatedAt":  "2026-11-11T19:58:05.134206356Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

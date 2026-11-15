@@ -1,0 +1,226 @@
+/* ==========================================================================
+   FLAME // FREEFALL — NASA Mission Control Styling & Deep Space Atmosphere
+   ========================================================================== */
+
+:root {
+  --bg-deep-space: #040911;
+  --panel-glass: rgba(8, 19, 34, 0.90);
+  --cyan-telemetry: #22d3ee;
+  --emerald-safe: #10b981;
+  --amber-marginal: #fbbf24;
+  --orange-sustained: #f97316;
+  --rose-danger: #f43f5e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-deep-space);
+  color: #f1f5f9;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Deep Space Starfield Background */
+body {
+  background-color: #040911;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(34, 211, 238, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 60%),
+    radial-gradient(2px 2px at 20px 30px, #ffffff 1px, transparent 1px),
+    radial-gradient(2px 2px at 90px 140px, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    radial-gradient(1.5px 1.5px at 150px 80px, rgba(34, 211, 238, 0.8) 1px, transparent 1px),
+    radial-gradient(2px 2px at 240px 220px, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+    radial-gradient(1.5px 1.5px at 320px 160px, rgba(251, 191, 36, 0.8) 1px, transparent 1px),
+    radial-gradient(2px 2px at 450px 300px, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 550px 550px, 350px 350px, 400px 400px, 600px 600px, 480px 480px, 520px 520px;
+  background-attachment: fixed;
+}
+
+/* Custom Slim Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #03070d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
+/* Tab Navigation Buttons */
+.main-tab-btn {
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.main-tab-btn.active {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22d3ee;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+}
+
+.main-tab-btn:not(.active):hover {
+  color: #ffffff;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+/* Gas Mix Pills */
+.gas-pill {
+  background: #050d18;
+  color: #94a3b8;
+  border: 1px solid #1e293b;
+  cursor: pointer;
+  user-select: none;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.gas-pill:hover {
+  border-color: #38bdf8;
+  color: #e2e8f0;
+}
+
+.gas-pill.active {
+  background: rgba(34, 211, 238, 0.2);
+  color: #38bdf8;
+  border-color: #22d3ee;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.25);
+  font-weight: 600;
+}
+
+/* Tested Sliders with Mission Control Styling */
+.tested-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: #0f172a;
+  outline: none;
+  border: 1px solid #1e293b;
+  transition: all 0.2s ease;
+}
+
+.tested-slider:hover {
+  border-color: #334155;
+}
+
+.tested-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #22d3ee;
+  border: 2px solid #040911;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.7);
+  cursor: grab;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.tested-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+  background: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.9);
+}
+
+.tested-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #22d3ee;
+  border: 2px solid #040911;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.7);
+  cursor: grab;
+}
+
+/* Quick Prompt Chips */
+.quick-chip {
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.quick-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* 2D Phase Canvas crosshair and display */
+#phase-map-canvas {
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* Glass panel glow */
+.glass-panel {
+  background: rgba(8, 19, 34, 0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+/* Dossier evidence badge links */
+.evidence-btn-run {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: #38bdf8;
+  background-color: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  transition: all 0.15s ease;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.evidence-btn-run:hover {
+  background-color: rgba(14, 165, 233, 0.28);
+  color: #e0f2fe;
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+.evidence-btn-ntrs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: #fbbf24;
+  background-color: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  transition: all 0.15s ease;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.evidence-btn-ntrs:hover {
+  background-color: rgba(245, 158, 11, 0.28);
+  color: #fef3c7;
+  border-color: #fbbf24;
+  transform: translateY(-1px);
+}

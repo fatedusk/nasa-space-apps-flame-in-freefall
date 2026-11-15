@@ -1,0 +1,129 @@
+Created At: 2026-11-15T03:35:50+05:30
+Completed At: 2026-11-15T03:35:51+05:30
+File Path: `file:///c:/Users/SHOURYA%20SHARMA/OneDrive/SpaceStation_Guardian/space-station-guardian/frontend/src/App.jsx`
+Total Lines: 2505
+Total Bytes: 99505
+Showing lines 2080 to 2200
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2080:             <div>
+2081:               <span className="eyebrow">{viewSwapped ? (hubCamMode === 'interior' ? 'ISS 3D INTERIOR // EXPEDITION 71' : 'OPTICAL HUB CAM') : 'TACTICAL ORBITAL VIEW'}</span>
+2082:               <h2>{viewSwapped ? (hubCamMode === 'interior' ? (currentInteriorSpot?.label || 'ISS Cabin Module') : 'International Space Station Hub Cam') : 'International Space Station'}</h2>
+2083:             </div>
+2084:             <div className="view-chip">
+2085:               <span className={`green-dot ${active ? 'pulse-alert' : ''}`} style={active ? { background: '#ff3b30' } : {}} />
+2086:               {active ? 'STRUCTURAL COLLAPSE ACTIVE' : '3D SCENE NOMINAL'}
+2087:             </div>
+2088:           </div>
+2089: 
+2090:           {/* Quick Swap Banner when views are swapped */}
+2091:           {viewSwapped && (
+2092:             <div className="view-swap-banner" onClick={() => setViewSwapped(false)} title="Click to restore standard orbital layout">
+2093:               <Repeat size={12} />
+2094:               <span>PRIMARY VIEW: HUD CAM // CLICK TO SWITCH BACK TO ORBITAL VIEW</span>
+2095:             </div>
+2096:           )}
+2097: 
+2098:           {!viewSwapped ? (
+2099:             <Canvas
+2100:               camera={{ position: [45, 24, 52], fov: 45, near: 0.5, far: 2500 }}
+2101:               dpr={[1, 1.8]}
+2102:               gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+2103:             >
+2104:               <SpaceScene
+2105:                 selected={selected}
+2106:                 onSelect={setSelected}
+2107:                 active={active}
+2108:                 scenario={scenario}
+2109:                 severity={severity}
+2110:                 startedAt={eventStart}
+2111:                 alertModule={active ? selected : null}
+2112:                 modelUrl={modelUrl}
+2113:               />
+2114:             </Canvas>
+2115:           ) : (
+2116:             <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+2117:               {hubCamMode === 'interior' ? (
+2118:                 <div style={{ width: '100%', height: '100%', position: 'relative' }} onContextMenu={(e) => e.preventDefault()}>
+2119:                   <Interior3DViewer
+2120:                     active={active}
+2121:                     startedAt={eventStart}
+2122:                     scenario={scenario}
+2123:                     severity={severity}
+2124:                     teleportTrigger={interiorTeleportKey}
+2125:                     onSpotChange={setCurrentInteriorSpot}
+2126:                   />
+2127:                   <div className="interior-nav-badge">
+2128:                     🖱️ <b>RIGHT CLICK</b>: MOVE &nbsp;•&nbsp; <b>LEFT CLICK</b>: LOOK &nbsp;•&nbsp; <b>SCROLL</b>: ZOOM
+2129:                   </div>
+2130:                   {currentInteriorSpot && (
+2131:                     <div className="teleport-location-tag">
+2132:                       📍 {currentInteriorSpot.label} // {currentInteriorSpot.desc}
+2133:                     </div>
+2134:                   )}
+2135:                   {active && (
+2136:                     <div className="interior-alarm-overlay">
+2137:                       <span className="interior-alarm-text">⚠ DEPRESSURISATION BREACH DETECTED</span>
+2138:                     </div>
+2139:                   )}
+2140:                 </div>
+2141:               ) : hubCamMode === '3d' ? (
+2142:                 <Canvas
+2143:                   camera={{ position: [14, 8, 16], fov: 48, near: 0.1, far: 1000 }}
+2144:                   gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.3 }}
+2145:                 >
+2146:                   <HubCam3DScene
+2147:                     selected={selected}
+2148:                     active={active}
+2149:                     scenario={scenario}
+2150:                     severity={severity}
+2151:                     startedAt={eventStart}
+2152:                     modelUrl={modelUrl}
+2153:                     camAngle={hubCamAngle}
+2154:                     zoom={hubCamZoom}
+2155:                   />
+2156:                 </Canvas>
+2157:               ) : (
+2158:                 <InternalModuleViewer
+2159:                   active={active}
+2160:                   startedAt={eventStart}
+2161:                   scenario={scenario}
+2162:                   severity={severity}
+2163:                   moduleName={selectedModule.name}
+2164:                 />
+2165:               )}
+2166:             </div>
+2167:           )}
+2168: 
+2169:           {/* 3D Hub Cam: Tactical ISS Blast & Floating Space Debris Optical Feed */}
+2170:           {showTacticalCam && (
+2171:             <div className={`tactical-cam-box ${hubCamExpanded ? 'expanded' : ''} ${hubFullscreen ? 'fullscreen' : ''}`}>
+2172:               <div className="tactical-cam-header">
+2173:                 <div className="cam-header-left">
+2174:                   <span className="live-indicator">
+2175:                     <span className="pulse-dot" style={{ background: active ? '#ff3b30' : '#45cda0' }} />
+2176:                     {viewSwapped ? 'ORBITAL VIEW // PIP' : active ? 'BREACH IN PROGRESS' : 'HUB CAM // OPTICAL LOCK'}
+2177:                   </span>
+2178:                   <span className="cam-coords">{viewSwapped ? 'DEEP SPACE' : `${selectedModule.short} // T+${elapsed.toFixed(2)}s`}</span>
+2179:                 </div>
+2180:                 <div className="cam-header-actions">
+2181:                   {!viewSwapped && hubCamMode === 'interior' && (
+2182:                     <button
+2183:                       className="teleport-btn"
+2184:                       onClick={() => setInteriorTeleportKey((k) => k + 1)}
+2185:                       title="Randomly Teleport to Another Module in ISS Interior"
+2186:                     >
+2187:                       <Shuffle size={11} /> TELEPORT
+2188:                     </button>
+2189:                   )}
+2190:                   {!viewSwapped && (
+2191:                     <div className="cam-mode-pills">
+2192:                       <button
+2193:                         className={`cam-mode-btn ${hubCamMode === 'interior' ? 'active' : ''}`}
+2194:                         onClick={() => {
+2195:                           setHubCamMode('interior');
+2196:                           setInteriorTeleportKey((k) => k + 1);
+2197:                         }}
+2198:                         title="ISS Photogrammetry Interior 3D Model — Right-Click Move, Scroll Zoom"
+2199:                       >
+2200:                         🛸 ISS INTERIOR
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

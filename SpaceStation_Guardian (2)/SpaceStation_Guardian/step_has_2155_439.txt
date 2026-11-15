@@ -1,0 +1,159 @@
+Created At: 2026-11-15T03:21:17+05:30
+Completed At: 2026-11-15T03:21:17+05:30
+File Path: `file:///c:/Users/SHOURYA%20SHARMA/OneDrive/SpaceStation_Guardian/space-station-guardian/frontend/src/App.jsx`
+Total Lines: 2369
+Total Bytes: 92834
+Showing lines 2050 to 2200
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2050:           {MODULES.map((m) => (
+2051:             <button key={m.id} className={`module-row ${selected === m.id ? 'selected' : ''}`} onClick={() => setSelected(m.id)}>
+2052:               <span className={`module-status ${active && selected === m.id ? 'alert' : ''}`} />
+2053:               <span className="module-name">{m.name}</span>
+2054:               <span className="module-state">{active && selected === m.id ? 'BREACH' : 'INTACT'}</span>
+2055:             </button>
+2056:           ))}
+2057:           <div className="module-card">
+2058:             <div className="eyebrow">SELECTED TARGET COMPONENT</div>
+2059:             <h3>{selectedModule.name}</h3>
+2060:             <p>{selectedModule.note}</p>
+2061:             <div className="component-line">
+2062:               <span>INTEGRITY</span>
+2063:               <b className={status === 'NOMINAL' ? 'ok' : status === 'WARNING' ? 'warn' : 'danger'}>
+2064:                 {active ? 'DETACHED / DESTROYED' : status}
+2065:               </b>
+2066:             </div>
+2067:             <div className="component-line">
+2068:               <span>BLAST EPICENTER</span>
+2069:               <b>{scenario === 'impact' ? 'EXTERNAL TRUSS' : selectedModule.short}</b>
+2070:             </div>
+2071:           </div>
+2072:           <div className="left-foot"><Shield size={15} /> DYNAMIC FRAGMENTATION SOLVER ACTIVE</div>
+2073:         </aside>
+2074: 
+2075:         <section className="viewport">
+2076:           <div className="view-head">
+2077:             <div><span className="eyebrow">TACTICAL ORBITAL VIEW</span><h2>International Space Station</h2></div>
+2078:             <div className="view-chip">
+2079:               <span className={`green-dot ${active ? 'pulse-alert' : ''}`} style={active ? { background: '#ff3b30' } : {}} />
+2080:               {active ? 'STRUCTURAL COLLAPSE ACTIVE' : '3D SCENE NOMINAL'}
+2081:             </div>
+2082:           </div>
+2083: 
+2084:           <Canvas
+2085:             camera={{ position: [45, 24, 52], fov: 45, near: 0.5, far: 2500 }}
+2086:             dpr={[1, 1.8]}
+2087:             gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+2088:           >
+2089:             <SpaceScene
+2090:               selected={selected}
+2091:               onSelect={setSelected}
+2092:               active={active}
+2093:               scenario={scenario}
+2094:               severity={severity}
+2095:               startedAt={eventStart}
+2096:               alertModule={active ? selected : null}
+2097:               modelUrl={modelUrl}
+2098:             />
+2099:           </Canvas>
+2100: 
+2101:           {/* 3D Hub Cam: Tactical ISS Blast & Floating Space Debris Optical Feed */}
+2102:           {showTacticalCam && (
+2103:             <div className={`tactical-cam-box ${hubCamExpanded ? 'expanded' : ''} ${hubFullscreen ? 'fullscreen' : ''}`}>
+2104:               <div className="tactical-cam-header">
+2105:                 <div className="cam-header-left">
+2106:                   <span className="live-indicator">
+2107:                     <span className="pulse-dot" style={{ background: active ? '#ff3b30' : '#45cda0' }} />
+2108:                     {active ? 'BREACH IN PROGRESS' : 'HUB CAM // OPTICAL LOCK'}
+2109:                   </span>
+2110:                   <span className="cam-coords">{selectedModule.short} // T+{elapsed.toFixed(2)}s</span>
+2111:                 </div>
+2112:                 <div className="cam-header-actions">
+2113:                   <div className="cam-mode-pills">
+2114:                     <button
+2115:                       className={`cam-mode-btn ${hubCamMode === 'interior' ? 'active' : ''}`}
+2116:                       onClick={() => setHubCamMode('interior')}
+2117:                       title="ISS Photogrammetry Interior 3D Model — Right-Click Move, Scroll Zoom"
+2118:                     >
+2119:                       🛸 ISS INTERIOR
+2120:                     </button>
+2121:                     <button
+2122:                       className={`cam-mode-btn ${hubCamMode === '3d' ? 'active' : ''}`}
+2123:                       onClick={() => setHubCamMode('3d')}
+2124:                       title="3D International Space Station Blast & Floating Debris"
+2125:                     >
+2126:                       <Orbit size={11} /> EXTERIOR
+2127:                     </button>
+2128:                     <button
+2129:                       className={`cam-mode-btn ${hubCamMode === 'cabin' ? 'active' : ''}`}
+2130:                       onClick={() => setHubCamMode('cabin')}
+2131:                       title="Procedural Cabin Cutaway View"
+2132:                     >
+2133:                       <Box size={11} /> CABIN
+2134:                     </button>
+2135:                   </div>
+2136:                   <button
+2137:                     className="cam-size-btn"
+2138:                     onClick={() => setHubCamExpanded((v) => !v)}
+2139:                     title={hubCamExpanded ? 'Standard Size' : 'Enlarge Hub Cam'}
+2140:                   >
+2141:                     {hubCamExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+2142:                   </button>
+2143:                 </div>
+2144:               </div>
+2145: 
+2146:               <div className="tactical-cam-body">
+2147:                 {hubCamMode === 'interior' ? (
+2148:                   /* ISS Photogrammetry 3D Interior — right-click moves, scroll zooms, left-click rotates */
+2149:                   <div style={{ width: '100%', height: '100%', position: 'relative' }} onContextMenu={(e) => e.preventDefault()}>
+2150:                     <Interior3DViewer
+2151:                       active={active}
+2152:                       startedAt={eventStart}
+2153:                       scenario={scenario}
+2154:                       severity={severity}
+2155:                     />
+2156:                     {/* Navigation hint badge */}
+2157:                     <div className="interior-nav-badge">
+2158:                       🖱️ <b>RIGHT CLICK</b>: MOVE &nbsp;•&nbsp; <b>LEFT CLICK</b>: LOOK &nbsp;•&nbsp; <b>SCROLL</b>: ZOOM
+2159:                     </div>
+2160:                     {/* Alarm overlay on blast */}
+2161:                     {active && (
+2162:                       <div className="interior-alarm-overlay">
+2163:                         <span className="interior-alarm-text">⚠ DEPRESSURISATION BREACH DETECTED</span>
+2164:                       </div>
+2165:                     )}
+2166:                   </div>
+2167:                 ) : hubCamMode === '3d' ? (
+2168:                   <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+2169:                     <Canvas
+2170:                       camera={{ position: [14, 8, 16], fov: 48, near: 0.1, far: 1000 }}
+2171:                       gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.3 }}
+2172:                     >
+2173:                       <HubCam3DScene
+2174:                         selected={selected}
+2175:                         active={active}
+2176:                         scenario={scenario}
+2177:                         severity={severity}
+2178:                         startedAt={eventStart}
+2179:                         modelUrl={modelUrl}
+2180:                         camAngle={hubCamAngle}
+2181:                         zoom={hubCamZoom}
+2182:                       />
+2183:                     </Canvas>
+2184: 
+2185:                     {/* HUD Controls Overlay on 3D Cam */}
+2186:                     <div className="hud-overlay-controls">
+2187:                       <div className="hud-angle-group">
+2188:                         <span className="hud-label">CAM:</span>
+2189:                         {['tactical', 'orbit', 'chase'].map((angle) => (
+2190:                           <button
+2191:                             key={angle}
+2192:                             className={`hud-sub-btn ${hubCamAngle === angle ? 'active' : ''}`}
+2193:                             onClick={() => setHubCamAngle(angle)}
+2194:                           >
+2195:                             {angle.toUpperCase()}
+2196:                           </button>
+2197:                         ))}
+2198:                       </div>
+2199:                       <div className="hud-zoom-group">
+2200:                         <span className="hud-label">ZOOM:</span>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

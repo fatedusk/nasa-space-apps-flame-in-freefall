@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IGNIS · Flame Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cy:#35d6ff;--tx:#eaf3ff;--mu:#8db3de;--am:#ffb347;--pn:rgba(6,24,62,.8);--ok:#3be8a0;--bad:#ff8a5c;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:70px;scroll-behavior:smooth}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% 0,#0a1d4a,#030814 65%) fixed;color:var(--tx);font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;line-height:1.5}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid rgba(53,214,255,.2);background:rgba(3,10,30,.82);position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backdrop-filter:blur(8px)}
+.brand{font-weight:700;letter-spacing:.2em;font-family:'Orbitron',sans-serif}.brand span{color:var(--cy)}
+nav{display:flex;gap:20px;flex-wrap:wrap;font-size:14px}nav a{color:var(--tx);text-decoration:none;opacity:.85}nav a:hover{color:var(--cy)}
+main{max-width:1320px;margin:0 auto;padding:16px}
+.stagebox{position:relative;height:min(70vh,680px);min-height:400px;border:1px solid rgba(53,214,255,.35);border-radius:20px;overflow:hidden;background:#04091a;box-shadow:0 0 40px rgba(31,107,255,.25)}
+#cv{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none}#cv:active{cursor:grabbing}
+.ov{position:absolute;top:12px;background:rgba(4,12,34,.82);border:1px solid rgba(53,214,255,.35);border-radius:12px;padding:10px 14px;font:12.5px/1.45 'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;min-width:215px;pointer-events:none}
+.ov.l{left:12px}.ov.r{right:12px}.ov h3{margin:0 0 6px;font-size:11px;letter-spacing:.16em;color:var(--mu);font-weight:600}
+.ov div.row{display:flex;justify-content:space-between;gap:14px}.ov b{font-weight:600}
+.tag{font-size:9px;padding:0 5px;border:1px solid var(--am);color:var(--am);border-radius:8px;margin-right:4px}
+.st{font-weight:700;padding:6px 8px;border-radius:8px;text-align:center;margin:4px 0 6px;border:1px solid;font-family:inherit}
+.st.in{color:var(--ok);border-color:var(--ok)}.st.out{color:var(--bad);border-color:var(--bad)}.st.none{color:var(--am);border-color:var(--am)}
+.cap{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:min(780px,92%);text-align:center;font-size:11.5px;color:#b9cdea;background:rgba(3,10,30,.62);border-radius:10px;padding:5px 10px;pointer-events:none}
+.how{position:absolute;left:12px;bottom:56px;pointer-events:auto;font-size:12.5px;padding:7px 12px;border-radius:20px;background:rgba(6,30,80,.85);border:1px solid rgba(53,214,255,.6);color:#fff;text-decoration:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0 6px}
+button{font:600 14px inherit;font-family:inherit;color:var(--tx);background:rgba(8,30,80,.7);border:1px solid rgba(53,214,255,.45);border-radius:14px;padding:9px 16px;cursor:pointer}
+button:hover{background:rgba(53,214,255,.2)}button.on{background:rgba(53,214,255,.3);border-color:#fff}
+.lbl{text-align:center;color:var(--mu);font-size:12px;letter-spacing:.14em;margin:12px 0 2px}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:12px 0}
+.ctl label{display:block;background:var(--pn);border:1px solid rgba(53,214,255,.25);border-radius:14px;padding:10px 14px;font-size:13px}
+.ctl output{float:right;color:var(--cy);font-weight:700}.ctl input{width:100%;accent-color:#35d6ff}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:16px}
+.card{background:var(--pn);border:1px solid rgba(53,214,255,.3);border-radius:16px;padding:16px 18px}
+.card h2,.card h3{margin:0 0 8px;font-size:18px}.card p{margin:0 0 10px;font-size:14.5px}
+.src{font-size:12.5px;color:var(--mu)}a{color:var(--cy)}
+h2.sec{margin:36px 0 6px;font-size:15px;letter-spacing:.2em;color:var(--cy);font-family:'Orbitron',sans-serif;font-weight:700;display:flex;align-items:center;gap:12px}
+h2.sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(53,214,255,.4) 0%,transparent 100%)}
+.pvs{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.pv{background:var(--pn);border:1px solid rgba(53,214,255,.25);border-radius:14px;padding:12px 14px;font-size:13.5px}
+.pv .k{display:flex;justify-content:space-between;gap:10px;font-weight:700;margin-bottom:4px}.pv .k b{color:var(--cy)}
+.e{display:inline-block;font-size:10px;padding:0 6px;border-radius:8px;margin-right:6px;border:1px solid;vertical-align:middle}
+.e.n{color:var(--ok);border-color:var(--ok)}.e.m{color:var(--am);border-color:var(--am)}.e.u{color:var(--mu);border-color:var(--mu)}
+.pv .l{margin-top:6px;font-size:12.5px;line-height:1.7}
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.ref{background:var(--pn);border:1px solid rgba(53,214,255,.25);border-radius:14px;padding:14px;font-size:13.5px;transition:.25s}
+.ref.match{border-color:#fff;box-shadow:0 0 22px rgba(53,214,255,.5)}
+.ref h4{margin:0 0 4px;font-size:15px}.ref .c{color:var(--am);font-size:12.5px;margin-bottom:6px}
+.ref button{font-size:12px;padding:5px 10px;margin:6px 6px 0 0}
+ul.s{padding-left:18px;font-size:13px;line-height:1.9}
+footer{max-width:900px;margin:30px auto 50px;padding:0 16px;color:var(--mu);font-size:12.5px;text-align:center}
+
+
+/* Compact 6-Video Gallery Grid */
+.video-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+.video-card {
+  background: var(--pn);
+  border: 1px solid rgba(53, 214, 255, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.video-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--cy);
+  box-shadow: 0 6px 20px rgba(53, 214, 255, 0.22);
+}
+.video-thumb-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  background: #020510;
+  overflow: hidden;
+  cursor: pointer;
+}
+.video-thumb-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.video-thumb-wrap:hover .video-thumb-img {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+.play-btn-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+.yt-play-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.8));
+}
+.yt-play-bg {
+  fill: #ff0000;
+  transition: fill 0.2s ease;
+}
+.video-thumb-wrap:hover .yt-play-bg {
+  fill: #35d6ff;
+}
+.video-thumb-wrap:hover .play-btn-overlay {
+  transform: translate(-50%, -50%) scale(1.12);
+  filter: drop-shadow(0 0 12px rgba(53, 214, 255, 0.8));
+}
+.video-chip {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(4, 9, 26, 0.88);
+  border: 1px solid rgba(53, 214, 255, 0.45);
+  color: #35d6ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  z-index: 2;
+  letter-spacing: 0.5px;
+}
+.video-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+.video-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px;
+  line-height: 1.4;
+}
+.video-desc {
+  font-size: 11.5px;
+  color: var(--mu);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.video-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  padding-top: 6px;
+  border-top: 1px solid rgba(53, 214, 255, 0.12);
+}
+/* NASA Reference Media Gallery & Video */
+.reference-media-section{margin-top:36px;margin-bottom:38px}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin:18px 0 26px}
+.media-card{background:var(--pn);border:1px solid rgba(53,214,255,.25);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.media-card:hover{transform:translateY(-3px);border-color:var(--cy);box-shadow:0 8px 24px rgba(53,214,255,.22)}
+.media-card-img-wrap{width:100%;height:185px;background:#020510;overflow:hidden;position:relative}
+.media-card-img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease;display:block}
+.media-card:hover .media-card-img{transform:scale(1.04)}
+.media-card-body{padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;flex:1}
+.media-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.4}
+.media-desc{font-size:12px;color:var(--mu);line-height:1.55;margin:0 0 12px}
+.media-links{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:11px;padding-top:8px;border-top:1px solid rgba(53,214,255,.12)}
+.source-link-btn{color:var(--cy);text-decoration:none;font-weight:600;transition:.2s}
+.source-link-btn:hover{text-decoration:underline;color:#fff}
+.video-embed-container{position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:14px;border:1px solid rgba(53,214,255,.3);margin-top:14px;background:#000}
+.video-embed-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.repository-links-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;background:rgba(53,214,255,.06);border:1px solid rgba(53,214,255,.25);border-radius:14px;padding:16px 20px;margin-top:24px;gap:16px}
+.repo-banner-text{flex:1;min-width:260px;font-size:13px;color:var(--mu);line-height:1.5}
+.repo-banner-btns{display:flex;flex-wrap:wrap;gap:10px}
+.repo-btn{display:inline-block;padding:8px 14px;font-size:12px;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-weight:600;color:var(--cy);background:rgba(53,214,255,.1);border:1px solid rgba(53,214,255,.35);border-radius:8px;text-decoration:none;transition:all .2s ease}
+.repo-btn:hover{background:var(--cy);color:#04091a}
+
+@media(max-width:700px){.ov{min-width:0;font-size:11px;padding:7px 9px}.ov.r{top:auto;bottom:96px}.how{bottom:120px}}
+</style></head><body>
+<header><div class="brand"><span>IGNIS</span> · CHAMBER CONTROLS & NASA FOOTAGE</div>
+<nav>
+<a href="#sim">Chamber</a>
+<a href="#how">Combustion Science</a>
+<a href="#refs">NASA Reference Data</a>
+<a href="#media-section">NASA Footage</a>
+<a href="#sources">Sources</a>
+</nav></header>
+<main id="sim">
+<div class="stagebox"><canvas id="cv" aria-label="3D cabin with a glass flame chamber. Drag to look around, scroll to zoom."></canvas>
+<div class="ov l"><h3 id="envT">ENVIRONMENT CHAMBER</h3>
+<div class="row"><span>Gravity</span><b id="vg"></b></div><div class="row"><span>Oxygen</span><b id="vo"></b></div><div class="row"><span>Pressure</span><b id="vp"></b></div><div class="row"><span>Airflow</span><b id="vf"></b></div>
+<div class="row"><span>O₂ partial pressure</span><b id="vpo"></b></div><div class="row"><span><span class="tag">estimate</span>Buoyant flow vs Earth</span><b id="vb"></b></div></div>
+<div class="ov r"><h3>RANGE CHECK vs NASA DATA</h3><div class="st" id="st"></div>
+<div class="row"><span>NASA entries at this gravity</span><b id="vn"></b></div><div class="row"><span><span class="tag">estimate</span>Flame size vs Earth air</span><b id="vs"></b></div><div class="row"><span><span class="tag">NASA</span>Shape / colour</span><b id="vsh"></b></div></div>
+<a class="how" href="#how">ⓘ How this result was reached</a>
+<div class="cap">Illustrative rendering driven by your inputs. Shape and colour follow NASA’s description of microgravity vs Earth flames; in-between gravity levels are interpolated. It is not a combustion simulation. Drag to look around.</div></div>
+<div class="lbl">GRAVITY</div>
+<div class="bar" id="gb"><button data-g="1">🌍 Earth (1 g)</button><button data-g="0.16">🌙 Moon (0.16 g)</button><button data-g="0.38">🔴 Mars (0.38 g)</button><button data-g="0">🛰 ISS / microgravity (~0 g)</button></div>
+<div class="lbl">NASA TEST ATMOSPHERES</div>
+<div class="bar" id="ab"><button data-k="air" data-o="20.9" data-p="101.3">Air (20.9 % O₂, 101.3 kPa)</button><button data-k="s1" data-o="21.5" data-p="100">Saffire-I cabin (21.5 %, 100 kPa)</button><button data-k="s5" data-o="26.2" data-p="70.7">Saffire-V cabin (26.2 %, 70.7 kPa)</button><button data-k="s6" data-o="29.9" data-p="54.5">Saffire-VI cabin (≈29.9 %, 54.5 kPa)</button></div>
+<div class="ctl">
+<label>Gravity <output id="og"></output><input id="g" type="range" min="0" max="1" step="0.01" value="1"></label>
+<label>Oxygen (%) <output id="oo"></output><input id="o" type="range" min="12" max="35" step="0.1" value="20.9"></label>
+<label>Pressure (kPa) <output id="op"></output><input id="p" type="range" min="20" max="101.3" step="0.1" value="101.3"></label>
+<label>Airflow (cm/s) <output id="of"></output><input id="f" type="range" min="0" max="30" step="1" value="0"></label></div>
+<div class="bar"><button id="cut">Cut the airflow (Saffire-V test)</button><button id="auto">Auto-rotate: off</button></div>
+<div class="grid2"><div class="card" id="desc"></div><div class="card" id="cutn"><h3>What NASA saw when airflow was reduced</h3><p>In Saffire-V, NASA cut the flow to 5 cm/s for 300 seconds, which helped a plastic (PMMA) sample go out quickly. With the fan off for about 70 seconds, a cotton-fabric flame came back and burned for roughly another 150 seconds.</p><p class="src">Source: <a href="https://ntrs.nasa.gov/api/citations/20210011521/downloads/ICES%202021-266%200503-2021%20final.pdf" target="_blank" rel="noopener">NASA NTRS, Saffire IV and V paper, ICES-2021-266</a></p></div></div>
+<h2 class="sec" id="how">HOW THIS RESULT WAS REACHED</h2>
+<p class="src">For each setting: where the value comes from and the exact NASA source. <span class="e n">NASA</span>= taken from NASA data or text. <span class="e m">model</span>= my assumption, no NASA source. <span class="e u">you</span>= set by you.</p>
+<div class="pvs" id="pvs"></div>
+<h2 class="sec" id="refs">NASA REFERENCE DATA</h2>
+<p class="src">Measured by NASA. Press a button to load that experiment’s conditions into the chamber. “PSI-xx” entries come from the NASA PSI tables.</p>
+<div class="refs" id="refl"></div>
+
+<!-- ==========================================================================
+     OFFICIAL NASA FLIGHT IMAGERY & EXPERIMENT VIDEO (FROM SCREENSHOT)
+     ========================================================================== -->
+<div class="reference-media-section" id="media-section">
+  <h2 class="sec">OFFICIAL NASA FLIGHT IMAGERY &amp; EXPERIMENT VIDEO</h2>
+  <p class="src" style="margin-bottom:18px;">
+    Ground-truth photographic and spectroscopic records from NASA Glenn Research Center, ISS Combustion Integrated Rack (CIR), Space Shuttle Columbia, and Cygnus Saffire missions.
+  </p>
+
+  <div class="media-grid">
+    <!-- Card 1: NASA Candle Flame Comparison Image -->
+    <div class="media-card">
+      <div class="media-card-img-wrap">
+        <img class="media-card-img" 
+             src="assets/nasa/candle_comparison_grc.jpg" 
+             onerror="this.src='https://images-assets.nasa.gov/image/GRC-1998-C-00485/GRC-1998-C-00485~medium.jpg'" 
+             alt="NASA Candle Flame Comparison 1G vs Microgravity">
+      </div>
+      <div class="media-card-body">
+        <div>
+          <h4 class="media-title">NASA GRC: 1-G vs. Microgravity Candle Flame</h4>
+          <p class="media-desc">
+            Direct side-by-side comparison recorded by NASA Glenn. Left: classic 1-G teardrop flame with yellow incandescent soot tip. Right: pure microgravity spherical blue chemiluminescence flame without buoyant convection.
+          </p>
+        </div>
+        <div class="media-links">
+          <span style="color:#5f80aa;">NASA ID: GRC-1998-C-00485</span>
+          <a href="https://science.nasa.gov/image-detail/candle-flames-3" target="_blank" rel="noopener" class="source-link-btn">NASA Science ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: STS-50 Candle Flames in Microgravity -->
+    <div class="media-card">
+      <div class="media-card-img-wrap">
+        <img class="media-card-img" 
+             src="assets/nasa/candle_microgravity_sts50.jpg" 
+             onerror="this.src='https://images-assets.nasa.gov/image/sts050-232-011/sts050-232-011~medium.jpg'" 
+             alt="Candle in Microgravity STS-50">
+      </div>
+      <div class="media-card-body">
+        <div>
+          <h4 class="media-title">STS-50: Candle Flame in Microgravity</h4>
+          <p class="media-desc">
+            Historic photograph of a candle flame burning in freefall aboard Space Shuttle Columbia during the USML-1 Spacelab mission. The flame burns as a dim, soot-free blue sphere fed solely by diffusion.
+          </p>
+        </div>
+        <div class="media-links">
+          <span style="color:#5f80aa;">NASA ID: sts050-232-011</span>
+          <a href="https://images.nasa.gov/details/sts050-232-011" target="_blank" rel="noopener" class="source-link-btn">NASA Images ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: BASS-II Experiment on ISS Microgravity Science Glovebox -->
+    <div class="media-card">
+      <div class="media-card-img-wrap">
+        <img class="media-card-img" 
+             src="assets/nasa/bass_flame_iss.jpg" 
+             onerror="this.src='https://images-assets.nasa.gov/image/iss040e086481/iss040e086481~medium.jpg'" 
+             alt="BASS-II Flame Test Session on ISS">
+      </div>
+      <div class="media-card-body">
+        <div>
+          <h4 class="media-title">BASS-II: ISS Microgravity Glovebox Flame</h4>
+          <p class="media-desc">
+            Expedition 40 flight experiment investigating solid fuel extinction and low-speed forced convection inside the Microgravity Science Glovebox (MSG). Note the rounded wake envelope in forced draft.
+          </p>
+        </div>
+        <div class="media-links">
+          <span style="color:#5f80aa;">NASA ID: iss040e086481</span>
+          <a href="https://images.nasa.gov/details/iss040e086481" target="_blank" rel="noopener" class="source-link-btn">NASA Images ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Saffire-IV Spacecraft Fire Experiment Fabric Burn -->
+    <div class="media-card">
+      <div class="media-card-img-wrap">
+        <img class="media-card-img" 
+             src="assets/nasa/saffire_fabric_burn.jpg" 
+             onerror="this.src='https://images-assets.nasa.gov/image/jsc2023e046375/jsc2023e046375~medium.jpg'" 
+             alt="Saffire Fabric Burn in Microgravity">
+      </div>
+      <div class="media-card-body">
+        <div>
+          <h4 class="media-title">Saffire-IV: Cotton-Fiberglass Fabric Burn</h4>
+          <p class="media-desc">
+            Large-scale flame spread across SIBAL fabric (75% cotton / 25% fiberglass) inside an uncrewed Cygnus resupply vehicle duct at elevated oxygen under reduced pressure exploration atmospheres.
+          </p>
+        </div>
+        <div class="media-links">
+          <span style="color:#5f80aa;">NASA ID: jsc2023e046375</span>
+          <a href="https://images.nasa.gov/details/jsc2023e046375" target="_blank" rel="noopener" class="source-link-btn">NASA Image Archive ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Saffire-V PMMA Extinction -->
+    <div class="media-card">
+      <div class="media-card-img-wrap">
+        <img class="media-card-img" 
+             src="assets/nasa/saffire_pmma_burn.jpg" 
+             onerror="this.src='https://images-assets.nasa.gov/image/jsc2023e046631/jsc2023e046631~small.jpg'" 
+             alt="Saffire PMMA Burn in Microgravity">
+      </div>
+      <div class="media-card-body">
+        <div>
+          <h4 class="media-title">Saffire-V: PMMA Polymer Ignition &amp; Flow Cut</h4>
+          <p class="media-desc">
+            Solid thermoplastic PMMA ignition in microgravity. When airflow velocity was decreased to 5 cm/s, the flame rapidly cooled due to radiative loss and reached total extinction.
+          </p>
+        </div>
+        <div class="media-links">
+          <span style="color:#5f80aa;">NASA ID: jsc2023e046631</span>
+          <a href="https://images.nasa.gov/details/jsc2023e046631" target="_blank" rel="noopener" class="source-link-btn">NASA Images ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: CIR Hardware inside ISS Destiny Lab -->
+    <div class="media-card">
+      <div class="media-card-img-wrap">
+        <img class="media-card-img" 
+             src="assets/nasa/cir_hardware_iss.jpg" 
+             onerror="this.src='https://images-assets.nasa.gov/image/GRC-2005-C-00892/GRC-2005-C-00892~medium.jpg'" 
+             alt="CIR Hardware ISS">
+      </div>
+      <div class="media-card-body">
+        <div>
+          <h4 class="media-title">ISS Combustion Integrated Rack (CIR)</h4>
+          <p class="media-desc">
+            The 100-liter sealed combustion chamber inside Destiny Laboratory on the ISS. Features 1 mm/s to 50 cm/s flow delivery, optical diagnostics, and chemiluminescent spectrometers.
+          </p>
+        </div>
+        <div class="media-links">
+          <span style="color:#5f80aa;">NASA ID: GRC-2005-C-00892</span>
+          <a href="https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/" target="_blank" rel="noopener" class="source-link-btn">NASA Glenn ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+      <!-- Official NASA Microgravity Combustion Videos Section (Compact 6-Video Grid) -->
+  <div style="margin-top:32px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+      <h3 style="font-family:'Orbitron',sans-serif; font-size:14px; color:#ffffff; margin:0;">
+        Official NASA Microgravity Combustion Video Archives
+      </h3>
+      <span style="font-size:12px; color:var(--cy); font-family:'JetBrains Mono',monospace;">6 Official Flight Records</span>
+    </div>
+    <p class="src" style="margin-bottom:14px;">
+      Ground-truth video archives from NASA Glenn, Johnson, and Marshall Space Flight Centers documenting droplet combustion, spherical diffusion flames, and cool flame phenomena aboard the ISS.
+    </p>
+
+    <div class="video-gallery-grid">
+      <!-- Video Card: W1oXykoz9zg -->
+      <div class="video-card" data-url="https://www.youtube.com/watch?v=W1oXykoz9zg" data-embed="https://www.youtube.com/embed/W1oXykoz9zg?autoplay=1&rel=0">
+        <div class="video-thumb-wrap" onclick="playOrOpenVideo(this)" title="Click to play: NASA ScienceCasts: The Power of Studying Combustion on ISS">
+          <img class="video-thumb-img" 
+               src="assets/nasa/yt_W1oXykoz9zg.jpg" 
+               onerror="this.src='https://img.youtube.com/vi/W1oXykoz9zg/hqdefault.jpg'" 
+               alt="NASA ScienceCasts: The Power of Studying Combustion on ISS">
+          <div class="play-btn-overlay">
+            <svg viewBox="0 0 68 48" class="yt-play-svg">
+              <path class="yt-play-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+              <polygon fill="#ffffff" points="45,24 27,14 27,34"></polygon>
+            </svg>
+          </div>
+          <span class="video-chip">NASA HD · 3:45</span>
+        </div>
+        <div class="video-card-body">
+          <div>
+            <div style="margin-bottom:4px;"><span class="tag">ACME / CIR Research</span></div>
+            <h4 class="video-title">NASA ScienceCasts: The Power of Studying Combustion on ISS</h4>
+            <p class="video-desc">Overview of microgravity combustion physics, removing buoyant convection, and the ACME chamber inside the Destiny Laboratory.</p>
+          </div>
+          <div class="video-footer">
+            <span style="color:#5f80aa;">NASA CIR / FLEX</span>
+            <a href="https://www.youtube.com/watch?v=W1oXykoz9zg" target="_blank" rel="noopener" class="source-link-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+      <!-- Video Card: BxxqCLxxY3M -->
+      <div class="video-card" data-url="https://www.youtube.com/watch?v=BxxqCLxxY3M&t=5s" data-embed="https://www.youtube.com/embed/BxxqCLxxY3M?start=5&autoplay=1&rel=0">
+        <div class="video-thumb-wrap" onclick="playOrOpenVideo(this)" title="Click to play: NASA ScienceCasts: Strange Flames on the Space Station">
+          <img class="video-thumb-img" 
+               src="assets/nasa/yt_BxxqCLxxY3M.jpg" 
+               onerror="this.src='https://img.youtube.com/vi/BxxqCLxxY3M/hqdefault.jpg'" 
+               alt="NASA ScienceCasts: Strange Flames on the Space Station">
+          <div class="play-btn-overlay">
+            <svg viewBox="0 0 68 48" class="yt-play-svg">
+              <path class="yt-play-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+              <polygon fill="#ffffff" points="45,24 27,14 27,34"></polygon>
+            </svg>
+          </div>
+          <span class="video-chip">NASA HD · t=5s</span>
+        </div>
+        <div class="video-card-body">
+          <div>
+            <div style="margin-bottom:4px;"><span class="tag">Cool Diffusion Flames</span></div>
+            <h4 class="video-title">NASA ScienceCasts: Strange Flames on the Space Station</h4>
+            <p class="video-desc">Discovery of soot-free spherical cool flames burning at low temperatures without visible soot radiation aboard the ISS.</p>
+          </div>
+          <div class="video-footer">
+            <span style="color:#5f80aa;">NASA CIR / FLEX</span>
+            <a href="https://www.youtube.com/watch?v=BxxqCLxxY3M&t=5s" target="_blank" rel="noopener" class="source-link-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+      <!-- Video Card: qQQ1OHW1_F4 -->
+      <div class="video-card" data-url="https://www.youtube.com/watch?v=qQQ1OHW1_F4" data-embed="https://www.youtube.com/embed/qQQ1OHW1_F4?autoplay=1&rel=0">
+        <div class="video-thumb-wrap" onclick="playOrOpenVideo(this)" title="Click to play: NASA ISS: Flame Comes to Life in Microgravity Combustion">
+          <img class="video-thumb-img" 
+               src="assets/nasa/yt_qQQ1OHW1_F4.jpg" 
+               onerror="this.src='https://img.youtube.com/vi/qQQ1OHW1_F4/hqdefault.jpg'" 
+               alt="NASA ISS: Flame Comes to Life in Microgravity Combustion">
+          <div class="play-btn-overlay">
+            <svg viewBox="0 0 68 48" class="yt-play-svg">
+              <path class="yt-play-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+              <polygon fill="#ffffff" points="45,24 27,14 27,34"></polygon>
+            </svg>
+          </div>
+          <span class="video-chip">FLEX-2 · 1:20</span>
+        </div>
+        <div class="video-card-body">
+          <div>
+            <div style="margin-bottom:4px;"><span class="tag">FLEX-2 Ignition</span></div>
+            <h4 class="video-title">NASA ISS: Flame Comes to Life in Microgravity Combustion</h4>
+            <p class="video-desc">High-resolution optical footage of spherical droplet ignition, symmetrical fuel vapor diffusion, and blue chemiluminescence.</p>
+          </div>
+          <div class="video-footer">
+            <span style="color:#5f80aa;">NASA CIR / FLEX</span>
+            <a href="https://www.youtube.com/watch?v=qQQ1OHW1_F4" target="_blank" rel="noopener" class="source-link-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+      <!-- Video Card: CE7Nz78rkfQ -->
+      <div class="video-card" data-url="https://www.youtube.com/watch?v=CE7Nz78rkfQ&t=152s" data-embed="https://www.youtube.com/embed/CE7Nz78rkfQ?start=152&autoplay=1&rel=0">
+        <div class="video-thumb-wrap" onclick="playOrOpenVideo(this)" title="Click to play: Space Station Live: Studying Fire In Space (FLEX-2)">
+          <img class="video-thumb-img" 
+               src="assets/nasa/yt_CE7Nz78rkfQ.jpg" 
+               onerror="this.src='https://img.youtube.com/vi/CE7Nz78rkfQ/hqdefault.jpg'" 
+               alt="Space Station Live: Studying Fire In Space (FLEX-2)">
+          <div class="play-btn-overlay">
+            <svg viewBox="0 0 68 48" class="yt-play-svg">
+              <path class="yt-play-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+              <polygon fill="#ffffff" points="45,24 27,14 27,34"></polygon>
+            </svg>
+          </div>
+          <span class="video-chip">FLEX-2 · t=152s</span>
+        </div>
+        <div class="video-card-body">
+          <div>
+            <div style="margin-bottom:4px;"><span class="tag">Droplet Extinction</span></div>
+            <h4 class="video-title">Space Station Live: Studying Fire In Space (FLEX-2)</h4>
+            <p class="video-desc">Microgravity Science Glovebox and CIR droplet combustion runs, evaluating radiative extinction limits and fuel efficiencies.</p>
+          </div>
+          <div class="video-footer">
+            <span style="color:#5f80aa;">NASA CIR / FLEX</span>
+            <a href="https://www.youtube.com/watch?v=CE7Nz78rkfQ&t=152s" target="_blank" rel="noopener" class="source-link-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+      <!-- Video Card: q7p9yXVgeNw -->
+      <div class="video-card" data-url="https://www.youtube.com/watch?v=q7p9yXVgeNw" data-embed="https://www.youtube.com/embed/q7p9yXVgeNw?autoplay=1&rel=0">
+        <div class="video-thumb-wrap" onclick="playOrOpenVideo(this)" title="Click to play: Space Station Live: Science of Space Combustion">
+          <img class="video-thumb-img" 
+               src="assets/nasa/yt_q7p9yXVgeNw.jpg" 
+               onerror="this.src='https://img.youtube.com/vi/q7p9yXVgeNw/hqdefault.jpg'" 
+               alt="Space Station Live: Science of Space Combustion">
+          <div class="play-btn-overlay">
+            <svg viewBox="0 0 68 48" class="yt-play-svg">
+              <path class="yt-play-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+              <polygon fill="#ffffff" points="45,24 27,14 27,34"></polygon>
+            </svg>
+          </div>
+          <span class="video-chip">NASA Live · 5:10</span>
+        </div>
+        <div class="video-card-body">
+          <div>
+            <div style="margin-bottom:4px;"><span class="tag">FLEX Droplet Dynamics</span></div>
+            <h4 class="video-title">Space Station Live: Science of Space Combustion</h4>
+            <p class="video-desc">Cornell and NASA investigators discuss burning isolated liquid fuel droplets in freefall to uncover clean combustion physics.</p>
+          </div>
+          <div class="video-footer">
+            <span style="color:#5f80aa;">NASA CIR / FLEX</span>
+            <a href="https://www.youtube.com/watch?v=q7p9yXVgeNw" target="_blank" rel="noopener" class="source-link-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+      <!-- Video Card: fhgh7XV0O1Y -->
+      <div class="video-card" data-url="https://www.youtube.com/watch?v=fhgh7XV0O1Y" data-embed="https://www.youtube.com/embed/fhgh7XV0O1Y?autoplay=1&rel=0">
+        <div class="video-thumb-wrap" onclick="playOrOpenVideo(this)" title="Click to play: Space Station Live: FLEX in Space for Safer Combustion">
+          <img class="video-thumb-img" 
+               src="assets/nasa/yt_fhgh7XV0O1Y.jpg" 
+               onerror="this.src='https://img.youtube.com/vi/fhgh7XV0O1Y/hqdefault.jpg'" 
+               alt="Space Station Live: FLEX in Space for Safer Combustion">
+          <div class="play-btn-overlay">
+            <svg viewBox="0 0 68 48" class="yt-play-svg">
+              <path class="yt-play-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+              <polygon fill="#ffffff" points="45,24 27,14 27,34"></polygon>
+            </svg>
+          </div>
+          <span class="video-chip">NASA Live · 4:40</span>
+        </div>
+        <div class="video-card-body">
+          <div>
+            <div style="margin-bottom:4px;"><span class="tag">Fire Safety & Engines</span></div>
+            <h4 class="video-title">Space Station Live: FLEX in Space for Safer Combustion</h4>
+            <p class="video-desc">How ISS microgravity flame research guides spacecraft fire safety standards and terrestrial low-emission combustor design.</p>
+          </div>
+          <div class="video-footer">
+            <span style="color:#5f80aa;">NASA CIR / FLEX</span>
+            <a href="https://www.youtube.com/watch?v=fhgh7XV0O1Y" target="_blank" rel="noopener" class="source-link-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Official NASA Repository Links Banner -->
+  <div class="repository-links-banner">
+    <div class="repo-banner-text">
+      <strong style="color:#ffffff; font-family:'Orbitron',sans-serif; font-size:13.5px; display:block; margin-bottom:4px;">
+        Direct Access to NASA Open Science Repositories
+      </strong>
+      Explore complete decadal datasets, raw thermocouple curves, and high-speed schlieren imagery from NASA Glenn and the ISS.
+    </div>
+    <div class="repo-banner-btns">
+      <a href="https://psi.nasa.gov/physci/repo/search?q=combustion" target="_blank" rel="noopener" class="repo-btn">
+        PSI Data Repository ↗
+      </a>
+      <a href="https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/" target="_blank" rel="noopener" class="repo-btn">
+        NASA Glenn Combustion ↗
+      </a>
+      <a href="https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/" target="_blank" rel="noopener" class="repo-btn">
+        Station Researcher's Guide ↗
+      </a>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec" id="sources">SOURCES</h2><ul class="s" id="srcl"></ul>
+</main>
+<footer>Everything marked NASA comes from the NASA PSI tables, NASA Technical Reports Server papers or NASA pages listed here. The picture, the “estimate” and “model” values and the cabin scenery are illustrative. Where NASA has no data for a condition, the page says so. Not for safety decisions.</footer>
+<script>
+const $=id=>document.getElementById(id);
+const L={
+feierpdf:["NASA NTRS 20010059376: Upward Flame Spread Over Thin Solids in Partial Gravity (0.10, 0.16 Lunar, 0.38 Martian, 1 g)","https://ntrs.nasa.gov/api/citations/20010059376/downloads/20010059376.pdf"],
+sack:["NASA NTRS 19990054085: Flame Spread and Extinction in Partial-Gravity Environments","https://ntrs.nasa.gov/citations/19990054085"],
+d3:["NASA NTRS 20010074003: Three-Dimensional Upward Flame Spreading in Partial-Gravity Buoyant Flows","https://ntrs.nasa.gov/citations/20010074003"],
+lewis:["NASA Lewis report on fire safety for lunar and Martian missions (NTRS 19980209743)","https://ntrs.nasa.gov/api/citations/19980209743/downloads/19980209743.pdf"],
+ferk:["NASA NTRS 20260000646: Material Flammability at Lunar and Martian Gravity (2026)","https://ntrs.nasa.gov/api/citations/20260000646/downloads/Ferkul-Lunar%20and%20Planetary%20Science%20Conference%202026.pdf"],
+candle:["NASA Science: Candle flames, normal gravity vs microgravity (image and caption)","https://science.nasa.gov/image-detail/candle-flames-3"],
+candle2:["NASA: Candle Flame – 1g vs Microgravity (image article)","https://www.nasa.gov/image-article/candle-flame-1g-vs-microgravity/"],
+buoy:["NASA NTRS 20000000185: review of reduced-gravity combustion (buoyant convection velocity)","https://ntrs.nasa.gov/api/citations/20000000185/downloads/20000000185.pdf"],
+s17:["NASA NTRS 20170000230: Operation and Development Status of Saffire","https://ntrs.nasa.gov/api/citations/20170000230/downloads/20170000230.pdf"],
+s16:["NASA NTRS 20170002628: Saffire status slides","https://ntrs.nasa.gov/api/citations/20170002628/downloads/20170002628.pdf"],
+s45:["NASA NTRS: Saffire IV and V paper, ICES-2021-266","https://ntrs.nasa.gov/api/citations/20210011521/downloads/ICES%202021-266%200503-2021%20final.pdf"],
+s6:["NASA NTRS: Saffire VI preliminary results, ICES-2024-365","https://ntrs.nasa.gov/api/citations/20240002981/downloads/Saffire-ICES-2024-ICES-365-accepted%20final.pdf"],
+sfs:["NASA Saffire fact sheet","https://www.nasa.gov/wp-content/uploads/2025/07/spacecraft-fire-safety-demonstration-saffire.pdf"],
+b2:["NASA NTRS 20210011385: BASS-II Summary Report","https://ntrs.nasa.gov/citations/20210011385"],
+psiall:["NASA PSI investigation search","https://psi.nasa.gov/physci/repo/search?q=&data_source=psi&data_type=investigation"]};
+const psi=id=>["NASA PSI: investigation "+id+" (search by ID)","https://psi.nasa.gov/physci/repo/search?q="+id+"&data_source=psi&data_type=investigation"];
+const lk=a=>`<a href="${a[1]}" target="_blank" rel="noopener">${a[0]}</a>`;
+const REF=[
+{t:"NASA Glenn KC-135 aircraft tests",g:[0.1,0.16,0.38,1],o2:[20.9,20.9],p:[20.3,40.5],c:"0.1, 0.16 (Moon), 0.38 (Mars) and 1 g · air at 0.2 to 0.4 atm · samples 1, 2 and 4 cm wide",r:"Steady flame spread speed and burned length rose with gravity. Flames spread faster and were longer on wider samples.",loads:[{l:"0.1 g",g:0.1,o:20.9,p:30},{l:"Moon 0.16 g",g:0.16,o:20.9,p:30},{l:"Mars 0.38 g",g:0.38,o:20.9,p:30},{l:"1 g",g:1,o:20.9,p:30}],s:[L.feierpdf]},
+{t:"Saffire-I (PSI-98)",g:[0],o2:[21.5,21.5],p:[100,100],fl:20,c:"Cloth sheet about 94 cm long · 21.5 % O₂ · about 100 kPa · 20 cm/s",r:"Steady flame about 4 cm long; maximum 6.2 cm.",loads:[{l:"Load",g:0,o:21.5,p:100,f:20}],s:[L.s16,psi("PSI-98")]},
+{t:"Saffire-II (PSI-99)",g:[0],o2:[21.5,22.1],p:[100,100],fl:20,c:"Nine small samples · 21.5 to 22.1 % O₂ · about 100 kPa · 20 cm/s",r:"Silicone samples had a burn length of about zero. The cotton-fiberglass cloth burned its full 29 cm at about 2.1 and 2.6 mm/s.",loads:[{l:"Load",g:0,o:21.8,p:100,f:20}],s:[L.s45,psi("PSI-99")]},
+{t:"Saffire-III (PSI-100)",g:[0],o2:[21,21],p:[100,100],fl:30,c:"Cloth sheet 94 × 40.6 cm · 21 % O₂ · about 100 kPa · 30 cm/s (PSI table; one NASA paper lists 25)",r:"Steady flame 5 cm long; maximum 8.2 cm.",loads:[{l:"Load",g:0,o:21,p:100,f:30}],s:[L.s45,psi("PSI-100")]},
+{t:"Saffire-IV",g:[0],o2:[22,22],p:[100,100],fl:20,c:"Cloth 50 cm long · 22 % O₂ · 100 kPa · 20 cm/s",r:"Steady flame 8.5 cm long, maximum 11 cm. Peak heat release 3,150 W.",loads:[{l:"Load",g:0,o:22,p:100,f:20}],s:[L.s45]},
+{t:"Saffire-V (three tests)",g:[0],o2:[25.4,26.2],p:[70.7,72.6],c:"V-2 cotton jersey 26.2 %, 70.7 kPa · V-3 PMMA 25.4 %, 71.3 kPa · V-4 ribbed PMMA 25.7 %, 72.6 kPa",r:"V-2: steady flame 10 cm, maximum 14 cm. V-3: flame grew to 11 cm after 450 s. Heat release reached up to 10 kW.",loads:[{l:"V-2",g:0,o:26.2,p:70.7},{l:"V-3",g:0,o:25.4,p:71.3},{l:"V-4",g:0,o:25.7,p:72.6}],s:[L.s45]},
+{t:"Saffire-VI (final flight)",g:[0],o2:[28.8,31],p:[54,55],fl:20,c:"28.8 to 31.0 % O₂ · 54 to 55 kPa · 20 cm/s",r:"Peak heat release about 3.2 kW (cloth) and 3.08 kW (two-sided PMMA). Both PMMA tests exceeded the carbon dioxide limit.",loads:[{l:"Load",g:0,o:29.9,p:54.5,f:20}],s:[L.s6]},
+{t:"BASS-II (PSI-25)",g:[0],o2:[13.6,22.2],p:null,fl:null,c:"Wind tunnel in the ISS glovebox · 13.6 to 22.2 % O₂ at start · air speed up to 53 cm/s",r:"Samples of different thickness and shape were burned. NASA reports that most tests had heat release well below 100 W.",loads:[{l:"Load 22.2 % O₂",g:0,o:22.2},{l:"Load 13.6 % O₂",g:0,o:13.6}],s:[L.b2,psi("PSI-25")]}];
+const PRE=[{g:1,n:"Earth (1 g)",e:"🌍",k:"earth"},{g:0.16,n:"Moon (0.16 g)",e:"🌙",k:"moon"},{g:0.38,n:"Mars (0.38 g)",e:"🔴",k:"mars"},{g:0,n:"ISS / microgravity (~0 g)",e:"🛰",k:"iss"}];
+const DESC={
+1:[`<p>NASA Glenn’s partial-gravity flame tests included normal-gravity runs so the Moon and Mars results could be compared with Earth.</p><p>NASA explains that on Earth, buoyant convection makes a candle flame teardrop-shaped and carries soot to the tip, which makes it yellow. NASA also screens spacecraft materials with a normal-gravity flammability test.</p>`,[L.feierpdf,L.candle,L.ferk]],
+0.16:[`<p>NASA Glenn burned thin solid fuels on the KC-135 aircraft at lunar gravity. Spread speed and burned length were “approximately proportional to the gravity level.”</p><p>A 2026 NASA paper adds that earlier work suggested lunar gravity could be more hazardous, because “flame spread rate as a function of gravity peaks there.” It also says some materials that do not burn at 1 g will burn in partial gravity.</p>`,[L.feierpdf,L.ferk]],
+0.38:[`<p>The same NASA aircraft tests included Martian gravity. NASA’s earlier work on downward-burning flames found faster spread and a lower oxygen level needed to burn as gravity was reduced.</p><p>A NASA Lewis report notes that “fire characteristics appear to be unique in some partial-gravity cases.”</p>`,[L.feierpdf,L.d3,L.lewis]],
+0:[`<p>NASA describes a candle flame in microgravity, where convective flows are absent, as “spherical, soot-free and blue.”</p><p>The Saffire experiments lit large fires inside Cygnus cargo spacecraft after they left the ISS. The sample was about 0.94 m long and 0.4 m wide, which NASA says is “an order of magnitude larger” than earlier low-gravity flame-spread tests in both dimensions.</p>`,[L.candle,L.s17,L.sfs]]};
+const ATM={air:{o:"Standard air is 20.9 % oxygen. NASA’s aircraft flame tests burned samples in air.",os:[L.feierpdf],p:"101.3 kPa is standard sea-level pressure (not a NASA test value). NASA’s aircraft tests used 20 to 40 kPa; Saffire-I, III and IV used about 100 kPa.",ps:[L.feierpdf,L.s45]},
+s1:{o:"Saffire-I: 21.5 % oxygen from the PSI-98 table.",os:[L.s16,psi("PSI-98")],p:"Saffire-I ran at about 100 kPa.",ps:[L.s16]},
+s5:{o:"Saffire-V test V-2: 26.2 % oxygen.",os:[L.s45],p:"Saffire-V test V-2: 70.7 kPa.",ps:[L.s45]},
+s6:{o:"Saffire-VI: 28.8 to 31.0 % oxygen (midpoint used).",os:[L.s6],p:"Saffire-VI: 54 to 55 kPa (midpoint used).",ps:[L.s6]}};
+const S={g:1,o:20.9,p:101.3,f:0},ORG={o:{t:"atm",k:"air"},p:{t:"atm",k:"air"},f:{t:"none"}};
+const M={b:1,sz:1,lean:0,t:{b:1,sz:1,lean:0}};
+const gOK=(x,g)=>x<0.05?g<0.02:Math.abs(x-g)<=0.03;
+const cls=g=>PRE.find(x=>gOK(x.g,g));
+function cover(){return REF.filter(r=>r.g.some(x=>gOK(x,S.g)))}
+function ranged(){const rs=cover();if(!rs.length)return{n:0,st:"none",rs};const ok=rs.filter(r=>r.p&&S.o>=r.o2[0]-0.5&&S.o<=r.o2[1]+0.5&&S.p>=r.p[0]-2&&S.p<=r.p[1]+2);return{n:rs.length,st:ok.length?"in":"out",rs,ok}}
+const first=r=>`<a href="${r.s[0][1]}" target="_blank" rel="noopener">${r.t}</a>`;
+function row(k,v,tag,txt,links){return`<div class="pv"><div class="k"><span>${k}</span><b>${v}</b></div><div><span class="e ${tag[0]}">${tag[1]}</span>${txt}</div>${links&&links.length?`<div class="l">${links.map(lk).join("<br>")}</div>`:""}</div>`}
+function origin(k,val,unit,near){const o=ORG[k];
+ if(o.t==="ref"){const r=REF[o.i];return[["n","NASA"],`Loaded from “${r.t}” (${o.l}).`,r.s]}
+ if(o.t==="atm"){const a=ATM[o.k];return[["n","NASA"],k==="o"?a.o:a.p,k==="o"?a.os:a.ps]}
+ if(k==="f"&&o.t==="none")return[["u","you"],"No forced airflow selected (default). Drag the slider to add some.",[]];
+ const n=near();return[["u","you"],`Set by you with the slider, so this exact value is not from a NASA test.${n.length?" NASA tests close to it: "+n.map(first).join("; ")+".":" No loaded NASA test is close to this value."}`,[]]}
+function how(){const c=cls(S.g),gm=(S.g*9.80665).toFixed(2),b=Math.sqrt(S.g),po=S.o*S.p/100;
+ const gv=S.g<0.005?"~0 g":S.g.toFixed(2)+" g · "+gm+" m/s²";let g;
+ if(c){const t={1:"Normal Earth gravity. NASA Glenn’s aircraft tests included 1 g runs for comparison.",0.16:"Lunar gravity (0.16 g), the value NASA used for “Lunar G” in its aircraft partial-gravity flame tests.",0.38:"Martian gravity (0.38 g), the value NASA used for “Martian G” in the same tests.",0:"Microgravity. Saffire fires were lit in orbit inside Cygnus spacecraft, where NASA says convective flows are absent."}[c.g];g=row("Gravity",gv,["n","NASA"],t,c.g===0?[L.candle,L.s17]:[L.feierpdf])}
+ else g=row("Gravity",gv,["u","you"],"Set by you. NASA’s aircraft tests used 0.1, 0.16, 0.38 and 1 g. In between, the model interpolates and the result is not NASA data.",[L.feierpdf]);
+ const o=origin("o",0,0,()=>REF.filter(r=>S.o>=r.o2[0]-1&&S.o<=r.o2[1]+1)),p=origin("p",0,0,()=>REF.filter(r=>r.p&&S.p>=r.p[0]-3&&S.p<=r.p[1]+3)),f=origin("f",0,0,()=>REF.filter(r=>r.fl!=null&&Math.abs(r.fl-S.f)<=3));
+ const sh=b<.12?"Spherical":b>.9?"Teardrop":"In between",cl=b<.12?"Blue, soot-free":b>.9?"Yellow (soot)":"Pale blend";
+ const r=ranged();
+ return [g,row("Oxygen",S.o.toFixed(1)+" %",o[0],o[1],o[2]),row("Pressure",S.p.toFixed(1)+" kPa",p[0],p[1],p[2]),row("Airflow",S.f+" cm/s",f[0],f[1],f[2]),
+ row("O₂ partial pressure",po.toFixed(1)+" kPa",["m","model"],"Oxygen % × pressure ÷ 100. Simple arithmetic, not a NASA measurement.",[]),
+ row("Buoyant flow vs Earth","≈ "+b.toFixed(2)+"×",["n","NASA"],"A NASA review of reduced-gravity combustion gives buoyant convection velocity as proportional to the square root of gravity times a length. The page shows √g relative to Earth.",[L.buoy]),
+ row("Flame shape",sh,["n","NASA"],"NASA says buoyant convection makes an Earth candle flame teardrop-shaped and a microgravity flame spherical. NASA aircraft tests found flame length rises with gravity. In-between levels are interpolated by the model, not measured.",[L.candle,L.feierpdf]),
+ row("Flame colour",cl,["n","NASA"],"NASA says the Earth flame is yellow because convection carries soot to the tip, and the microgravity flame is soot-free and blue. The pale in-between colour is the model’s blend, not a NASA measurement.",[L.candle,L.candle2]),
+ row("Flame size","≈ "+Math.min(1.8,Math.max(.3,Math.sqrt(po/21.2))).toFixed(2)+"×",["m","model"],"Scaled with the square root of oxygen partial pressure. This is my assumption with no NASA formula. NASA does note that a flow below the buoyant blowoff limit lets a material burn in microgravity with a smaller flame.",[L.ferk]),
+ row("Flame lean (airflow)",(S.f/(S.f+8)*100).toFixed(0)+" % of max",["m","model"],"The flame leans with airflow for illustration only. Measured flow effects are in the Saffire and BASS-II results.",[L.s45,L.b2]),
+ row("Range check",r.st==="in"?"Inside":r.st==="out"?"Outside":"No data",["n","NASA data"],r.st==="none"?"No NASA reference entry at this gravity is loaded.":r.st==="in"?"Your oxygen and pressure fall inside: "+r.ok.map(first).join("; ")+".":"Your oxygen and pressure are outside the loaded NASA tests at this gravity ("+r.rs.map(first).join("; ")+"), so the picture is extrapolated.",[])].join("")}
+function ui(){const c=cls(S.g),b=Math.sqrt(S.g),po=S.o*S.p/100,sz=Math.min(1.8,Math.max(.3,Math.sqrt(po/21.2)));
+ $("envT").textContent="ENVIRONMENT CHAMBER · "+(c?c.n.split(" (")[0].toUpperCase():"CUSTOM");
+ $("vg").textContent=S.g<0.005?"~0 g":S.g.toFixed(2)+" g";$("vo").textContent=S.o.toFixed(1)+" %";$("vp").textContent=S.p.toFixed(1)+" kPa";$("vf").textContent=S.f+" cm/s";
+ $("vpo").textContent=po.toFixed(1)+" kPa";$("vb").textContent="≈ "+b.toFixed(2)+"×";$("vs").textContent="≈ "+sz.toFixed(2)+"×";
+ $("vsh").textContent=b<.12?"Sphere · blue":b>.9?"Teardrop · yellow":"Blend (interp.)";
+ const r=ranged();$("vn").textContent=r.n;$("st").className="st "+r.st;$("st").textContent=r.st==="in"?"Inside conditions NASA tested at this gravity":r.st==="out"?"Outside tested conditions: extrapolated":"No NASA reference at this gravity";
+ $("og").textContent=S.g<0.005?"~0 g":S.g.toFixed(2)+" g";$("oo").textContent=S.o.toFixed(1);$("op").textContent=S.p.toFixed(1);$("of").textContent=S.f;
+ document.querySelectorAll("#gb button").forEach(x=>x.classList.toggle("on",Math.abs(+x.dataset.g-S.g)<0.005));
+ document.querySelectorAll("#ab button").forEach(x=>x.classList.toggle("on",Math.abs(+x.dataset.o-S.o)<0.05&&Math.abs(+x.dataset.p-S.p)<0.05));
+ const d=c?DESC[c.g]:null;$("desc").innerHTML=d?`<h3>${c.e} ${c.n}: what NASA reports</h3>${d[0]}<p class="src">Sources: ${d[1].map(lk).join(" · ")}</p>`:`<h3>Custom gravity (${S.g.toFixed(2)} g)</h3><p>NASA’s aircraft tests used 0.1, 0.16, 0.38 and 1 g. At other levels the picture is interpolated by the model and is not NASA data.</p><p class="src">Source for the tested levels: ${lk(L.feierpdf)}</p>`;
+ $("pvs").innerHTML=how();
+ document.querySelectorAll(".ref").forEach((el,i)=>{const e=REF[i];el.classList.toggle("match",e.g.some(x=>gOK(x,S.g))&&S.o>=e.o2[0]-.5&&S.o<=e.o2[1]+.5&&(!e.p||(S.p>=e.p[0]-2&&S.p<=e.p[1]+2)))});
+ M.t={b,sz:Math.min(1.35,Math.max(.55,.55+.45*sz)),lean:S.f/(S.f+8)*0.9};env.want=envKey()}
+function envKey(){if(S.g<0.05)return"iss";return[[.16,"moon"],[.38,"mars"],[1,"earth"]].reduce((a,x)=>Math.abs(x[0]-S.g)<Math.abs(a[0]-S.g)?x:a)[1]}
+function set(k,v,org){S[k]=+v;$(k).value=S[k];if(org)ORG[k]=org;ui()}
+["g","o","p","f"].forEach(k=>$(k).oninput=e=>{S[k]=+e.target.value;if(k!=="g")ORG[k]={t:"user"};ui()});
+document.querySelectorAll("#gb button").forEach(b=>b.onclick=()=>set("g",b.dataset.g));
+document.querySelectorAll("#ab button").forEach(b=>b.onclick=()=>{S.o=+b.dataset.o;S.p=+b.dataset.p;$("o").value=S.o;$("p").value=S.p;ORG.o={t:"atm",k:b.dataset.k};ORG.p={t:"atm",k:b.dataset.k};ui()});
+$("cut").onclick=()=>{set("f",0,{t:"user"});$("cutn").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("auto").onclick=()=>{cam.auto=!cam.auto;$("auto").classList.toggle("on",cam.auto);$("auto").textContent="Auto-rotate: "+(cam.auto?"on":"off")};
+$("refl").innerHTML=REF.map((e,i)=>`<div class="ref"><h4>${e.t}</h4><div class="c">${e.c}</div><div><b>Measured by NASA:</b> ${e.r}</div>${e.loads.map((l,j)=>`<button data-i="${i}" data-j="${j}">${l.l}</button>`).join("")}<div class="src" style="margin-top:8px">${e.s.map(lk).join("<br>")}</div></div>`).join("");
+$("refl").onclick=e=>{const b=e.target.closest("button");if(!b)return;const i=+b.dataset.i,l=REF[i].loads[b.dataset.j],o={t:"ref",i,l:l.l};S.g=l.g;$("g").value=l.g;S.o=l.o;$("o").value=l.o;ORG.o=o;if(l.p!=null){S.p=l.p;$("p").value=l.p;ORG.p=o}if(l.f!=null){S.f=l.f;$("f").value=l.f;ORG.f=o}ui();$("sim").scrollIntoView({behavior:"smooth"})};
+const used=new Set();Object.values(L).forEach(a=>used.add(a));
+$("srcl").innerHTML=[...used].map(a=>`<li>${lk(a)}</li>`).join("");
+/* ---------- 3D cabin renderer: own orbit camera + perspective projection ---------- */
+const cv=$("cv"),cx=cv.getContext("2d");let W=0,H=0,B;
+const cam={th:.9,ph:.1,d:3.3,auto:false},TG=[0,1.02,0],RW=4.6,TH0=.9;
+const env={cur:"earth",prev:null,t:1,want:"earth"};
+const hs=(i,j)=>{const x=Math.sin(i*12.9898+j*78.233)*43758.5453;return x-Math.floor(x)};
+function fit(){const r=cv.getBoundingClientRect(),D=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;cv.width=W*D;cv.height=H*D;cx.setTransform(D,0,0,D,0,0)}
+function basis(){const cp=Math.cos(cam.ph),c=[TG[0]+cam.d*cp*Math.sin(cam.th),TG[1]+cam.d*Math.sin(cam.ph),TG[2]+cam.d*cp*Math.cos(cam.th)];
+ let f=[TG[0]-c[0],TG[1]-c[1],TG[2]-c[2]];const fl=Math.hypot(...f);f=f.map(v=>v/fl);let r=[-f[2],0,f[0]];const rl=Math.hypot(r[0],r[2]);r=[r[0]/rl,0,r[2]/rl];
+ B={c,f,r,u:[r[1]*f[2]-r[2]*f[1],r[2]*f[0]-r[0]*f[2],r[0]*f[1]-r[1]*f[0]],k:H*.95}}
+function P(x,y,z){const v=[x-B.c[0],y-B.c[1],z-B.c[2]],d=v[0]*B.f[0]+v[1]*B.f[1]+v[2]*B.f[2];
+ return[W/2+(v[0]*B.r[0]+v[1]*B.r[1]+v[2]*B.r[2])*B.k/d,H*.52-(v[0]*B.u[0]+v[1]*B.u[1]+v[2]*B.u[2])*B.k/d,d,B.k/d]}
+const wp=(a,y)=>P(RW*Math.sin(a),y,RW*Math.cos(a));
+function poly(a,fill){cx.beginPath();a.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));if(fill){cx.closePath();cx.fill()}else cx.stroke()}
+const ring=(y,r,n=40)=>{const a=[];for(let i=0;i<=n;i++){const t=i/n*6.2832;a.push(P(r*Math.cos(t),y,r*Math.sin(t)))}return a};
+function spr(rgb){const c=document.createElement("canvas");c.width=c.height=64;const g=c.getContext("2d"),r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,`rgba(${rgb},1)`);r.addColorStop(.35,`rgba(${rgb},.5)`);r.addColorStop(1,`rgba(${rgb},0)`);g.fillStyle=r;g.fillRect(0,0,64,64);return c}
+const COOL=["235,245,255","170,210,255","105,160,255","70,110,235"].map(spr),PALE=["255,246,225","255,232,160","255,210,125","255,180,95"].map(spr),WARM=["150,175,255","255,240,170","255,185,70","255,100,35"].map(spr);
+const N=1100,PR=[];for(let i=0;i<N;i++)PR.push({s:Math.random(),a:Math.random()*6.283,r:Math.sqrt(Math.random()),m:Math.random(),z:.6+Math.random()*.8,c:Math.random()*2-1,p:Math.cbrt(Math.random())});
+const STARS=[];for(let i=0;i<90;i++)STARS.push([hs(i,1)*2-1,hs(i,2)*2-1,.4+hs(i,3)]);
+const SPECK=[];for(let i=0;i<70;i++)SPECK.push([hs(i,5)*3,.2+hs(i,6)*1.7,(hs(i,7)-.5)*1.3]);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+/* window scenery */
+function drawEnv(k,bx,al){const[cxw,cyw,R]=bx;cx.globalAlpha=al;
+ const stars=()=>{cx.fillStyle="#fff";STARS.forEach(s=>{cx.globalAlpha=al*Math.min(1,s[2]);cx.fillRect(cxw+s[0]*R,cyw+s[1]*R,1.5,1.5)});cx.globalAlpha=al};
+ if(k==="earth"){const g=cx.createLinearGradient(0,cyw-R,0,cyw+R);g.addColorStop(0,"#4a97ee");g.addColorStop(.6,"#bfe0ff");g.addColorStop(1,"#e2f0ff");cx.fillStyle=g;cx.fillRect(cxw-R,cyw-R,R*2,R*2);
+  const s=cx.createRadialGradient(cxw+R*.4,cyw-R*.4,0,cxw+R*.4,cyw-R*.4,R*.3);s.addColorStop(0,"rgba(255,255,240,.9)");s.addColorStop(1,"rgba(255,255,240,0)");cx.fillStyle=s;cx.fillRect(cxw-R,cyw-R,R*2,R*2);
+  cx.fillStyle="#d7b684";cx.beginPath();cx.moveTo(cxw-R,cyw+R*.3);cx.quadraticCurveTo(cxw-R*.3,cyw+R*.05,cxw+R*.2,cyw+R*.25);cx.quadraticCurveTo(cxw+R*.7,cyw+R*.4,cxw+R,cyw+R*.15);cx.lineTo(cxw+R,cyw+R);cx.lineTo(cxw-R,cyw+R);cx.fill();
+  cx.fillStyle="rgba(150,110,60,.35)";cx.beginPath();cx.moveTo(cxw-R,cyw+R*.6);cx.quadraticCurveTo(cxw,cyw+R*.35,cxw+R,cyw+R*.65);cx.lineTo(cxw+R,cyw+R);cx.lineTo(cxw-R,cyw+R);cx.fill()}
+ else if(k==="moon"){cx.fillStyle="#02030a";cx.fillRect(cxw-R,cyw-R,R*2,R*2);stars();
+  cx.fillStyle="#5aa0ff";cx.beginPath();cx.arc(cxw+R*.45,cyw-R*.45,R*.13,0,6.3);cx.fill();cx.fillStyle="rgba(255,255,255,.5)";cx.beginPath();cx.arc(cxw+R*.43,cyw-R*.48,R*.06,0,6.3);cx.fill();
+  const g=cx.createLinearGradient(0,cyw,0,cyw+R);g.addColorStop(0,"#b4b4b4");g.addColorStop(1,"#6e6e6e");cx.fillStyle=g;cx.beginPath();cx.moveTo(cxw-R,cyw+R*.3);cx.quadraticCurveTo(cxw-R*.4,cyw+R*.12,cxw,cyw+R*.28);cx.quadraticCurveTo(cxw+R*.5,cyw+R*.4,cxw+R,cyw+R*.2);cx.lineTo(cxw+R,cyw+R);cx.lineTo(cxw-R,cyw+R);cx.fill();
+  for(let i=0;i<14;i++){const x=cxw+(hs(i,9)*2-1)*R,y=cyw+R*(.4+hs(i,10)*.55),r=R*(.04+hs(i,11)*.1);cx.fillStyle="rgba(60,60,60,.45)";cx.beginPath();cx.ellipse(x,y,r*1.5,r*.6,0,0,6.3);cx.fill();cx.strokeStyle="rgba(230,230,230,.35)";cx.beginPath();cx.ellipse(x,y-r*.15,r*1.5,r*.6,0,3.5,6);cx.stroke()}}
+ else if(k==="mars"){const g=cx.createLinearGradient(0,cyw-R,0,cyw+R);g.addColorStop(0,"#e9b796");g.addColorStop(.7,"#f1cdae");g.addColorStop(1,"#e4b08c");cx.fillStyle=g;cx.fillRect(cxw-R,cyw-R,R*2,R*2);
+  const s=cx.createRadialGradient(cxw+R*.35,cyw-R*.35,0,cxw+R*.35,cyw-R*.35,R*.35);s.addColorStop(0,"rgba(255,255,255,.95)");s.addColorStop(.25,"rgba(255,255,240,.6)");s.addColorStop(1,"rgba(255,230,200,0)");cx.fillStyle=s;cx.fillRect(cxw-R,cyw-R,R*2,R*2);
+  cx.fillStyle="#c8814f";cx.beginPath();cx.moveTo(cxw-R,cyw+R*.28);cx.quadraticCurveTo(cxw-R*.2,cyw+R*.1,cxw+R*.3,cyw+R*.3);cx.quadraticCurveTo(cxw+R*.7,cyw+R*.42,cxw+R,cyw+R*.25);cx.lineTo(cxw+R,cyw+R);cx.lineTo(cxw-R,cyw+R);cx.fill();
+  cx.fillStyle="rgba(120,60,30,.3)";cx.beginPath();cx.moveTo(cxw-R,cyw+R*.65);cx.quadraticCurveTo(cxw,cyw+R*.45,cxw+R,cyw+R*.7);cx.lineTo(cxw+R,cyw+R);cx.lineTo(cxw-R,cyw+R);cx.fill()}
+ else{cx.fillStyle="#010208";cx.fillRect(cxw-R,cyw-R,R*2,R*2);stars();
+  const er=R*1.5,ey=cyw+R*1.25,g=cx.createRadialGradient(cxw,ey-er*.2,er*.2,cxw,ey,er);g.addColorStop(0,"#2a78d8");g.addColorStop(.85,"#1a56b8");g.addColorStop(1,"#8fd0ff");cx.fillStyle=g;cx.beginPath();cx.arc(cxw,ey,er,0,6.3);cx.fill();
+  cx.save();cx.beginPath();cx.arc(cxw,ey,er,0,6.3);cx.clip();for(let i=0;i<26;i++){const x=cxw+(hs(i,13)*2-1)*R,y=cyw+R*(.1+hs(i,14)*1.2),r=R*(.05+hs(i,15)*.14);cx.fillStyle=hs(i,16)>.5?"rgba(255,255,255,.7)":"rgba(70,150,80,.7)";cx.beginPath();cx.ellipse(x,y,r*1.6,r*.8,hs(i,17),0,6.3);cx.fill()}cx.restore();
+  cx.strokeStyle="rgba(140,200,255,.8)";cx.lineWidth=2;cx.beginPath();cx.arc(cxw,ey,er,3.6,5.8);cx.stroke()}
+ cx.globalAlpha=1}
+function room(){
+ const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#0c0e14");g.addColorStop(1,"#171a22");cx.fillStyle=g;cx.fillRect(0,0,W,H);
+ const q=[],nc=48,rows=[-.4,.27,.93,1.6,2.27,2.93,3.6];
+ for(let i=0;i<nc;i++)for(let j=0;j<6;j++){const a0=i/nc*6.2832,a1=(i+1)/nc*6.2832,c=[wp(a0,rows[j]),wp(a1,rows[j]),wp(a1,rows[j+1]),wp(a0,rows[j+1])];if(c.some(p=>p[2]<.5))continue;q.push({z:(c[0][2]+c[2][2])/2,c,i,j})}
+ q.sort((a,b)=>b.z-a.z);
+ for(const o of q){const l=26+hs(o.i,o.j)*10,lit=o.j===5&&o.i%8===2;
+  cx.fillStyle=`rgb(${l},${l+2},${l+9})`;poly(o.c,true);if(lit){const m=(a,b2,t)=>[a[0]+(b2[0]-a[0])*t,a[1]+(b2[1]-a[1])*t];cx.fillStyle="#fff";poly([m(o.c[0],o.c[1],.42),m(o.c[0],o.c[1],.58),m(o.c[3],o.c[2],.58),m(o.c[3],o.c[2],.42)],true)}cx.strokeStyle="rgba(5,6,10,.9)";cx.lineWidth=1.2;poly(o.c.concat([o.c[0]]));
+  const w=Math.abs(o.c[1][0]-o.c[0][0]);if(w<10||lit)continue;
+  const mx=(o.c[0][0]+o.c[2][0])/2,my=(o.c[0][1]+o.c[2][1])/2,h=hs(o.i*3,o.j);
+  if(h>.45){cx.fillStyle="rgba(0,0,0,.85)";cx.beginPath();cx.ellipse(mx,my+w*.08,w*.07,w*.045,0,0,6.3);cx.fill()}
+  if(h<.22){cx.fillStyle=["#c0392b","#d4a017","#2e6fd8","#2f9e5b"][o.i%4];cx.fillRect(o.c[0][0]+w*.1,o.c[0][1]+w*.08,w*.35,w*.025)}}
+ /* window */
+ const aw=TH0+3.1416-.62,yw=1.7,pts=(r)=>{const a=[];for(let k=0;k<=48;k++){const t=k/48*6.2832;a.push(wp(aw+r*Math.cos(t)/RW,yw+r*Math.sin(t)))}return a},fo=pts(1.0),fi=pts(.82);
+ if(fo.every(p=>p[2]>.5)){cx.fillStyle="#12141a";poly(fo,true);cx.strokeStyle="#4a505c";cx.lineWidth=2;poly(fo);
+  const xs=fi.map(p=>p[0]),ys=fi.map(p=>p[1]),bx=[(Math.min(...xs)+Math.max(...xs))/2,(Math.min(...ys)+Math.max(...ys))/2,(Math.max(...xs)-Math.min(...xs))/2];
+  cx.save();cx.beginPath();fi.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));cx.closePath();cx.clip();
+  if(env.prev&&env.t<1)drawEnv(env.prev,bx,1);drawEnv(env.cur,bx,env.prev?env.t:1);cx.restore();cx.strokeStyle="#8a909c";cx.lineWidth=3;poly(fi);cx.strokeStyle="rgba(255,255,255,.25)";cx.lineWidth=1;poly(fo)}}
+function chamber(t,back){
+ const R=.8,ap=[TH0+1.5708,TH0-1.5708];
+ if(back){cx.fillStyle="#0b0d12";poly(ring(0,.98),true);cx.fillStyle="#1b1e26";poly(ring(.07,.98),true);cx.strokeStyle="rgba(150,190,255,.14)";cx.lineWidth=1;
+  for(let i=0;i<16;i++){const a=i/16*6.2832,x=R*Math.sin(a),z=R*Math.cos(a),p0=P(x,.07,z);if(p0[2]<=P(0,.07,0)[2])continue;poly([p0,P(x,2.0,z)])}
+  ap.forEach(a=>{const x=R*Math.sin(a),z=R*Math.cos(a),b=P(x,.07,z),tp=P(x,2.02,z);if(b[2]>P(0,1,0)[2]){cx.strokeStyle="#050608";cx.lineWidth=.07*b[3];poly([b,tp])}})}
+ else{cx.strokeStyle="rgba(170,210,255,.16)";cx.lineWidth=1;
+  for(let i=0;i<16;i++){const a=i/16*6.2832,x=R*Math.sin(a),z=R*Math.cos(a),p0=P(x,.07,z);if(p0[2]>P(0,.07,0)[2])continue;poly([p0,P(x,2.0,z)])}
+  cx.strokeStyle="rgba(255,255,255,.55)";cx.lineWidth=2;[TH0+.5,TH0-.7].forEach(a=>{const x=R*Math.sin(a),z=R*Math.cos(a),b=P(x,.15,z);if(b[2]<P(0,1,0)[2])poly([b,P(x,1.9,z)])});
+  ap.forEach(a=>{const x=R*Math.sin(a),z=R*Math.cos(a),b=P(x,.07,z),tp=P(x,2.02,z);if(b[2]<=P(0,1,0)[2]){cx.strokeStyle="#050608";cx.lineWidth=.07*b[3];poly([b,tp])}});
+  const r1=ring(2.0,.98),r2=ring(2.14,.98);cx.fillStyle="#101218";for(let i=0;i<40;i+=1)poly([r1[i],r1[i+1],r2[i+1],r2[i]],true);cx.fillStyle="#1d2028";poly(r2,true);cx.strokeStyle="rgba(180,200,230,.35)";cx.lineWidth=1.2;poly(r2);poly(r1)}}
+function burner(){for(let y=.07;y<=.56;y+=.02){const k=Math.round(170+(y-.07)*70);cx.fillStyle=`rgb(${k},${k-8},${k-22})`;poly(ring(y,.13,18),true)}
+ for(let a=0;a<=1;a+=.1){const y=.56+a*.1,r=.13*Math.sqrt(1-a*a*.9);cx.fillStyle=`rgb(${205+a*30|0},${197+a*30|0},${182+a*30|0})`;poly(ring(y,r,18),true)}}
+function flame(t, fl) {
+  const b = M.b;       // sqrt(g): 0 = 0g (ISS), 0.40 = Moon (0.16g), 0.616 = Mars (0.38g), 1.0 = Earth
+  const sz = M.sz;     // Size scalar driven by O2 partial pressure
+  const lean = M.lean; // Airflow lean factor
+
+  const R0 = 0.28 * sz; // Baseline diffusion radius
+  const y0 = 0.66;      // Candle wick tip height in 3D space
+
+  // =========================================================================
+  // 1. GEOMETRY CALIBRATION (NASA KC-135, STS-50 & GRC Empirical Data)
+  // =========================================================================
+  // Height:
+  // - 0g: exactly 2.0 * R0 (circle/sphere)
+  // - Moon (0.16g): only 2.15 * R0 (low, squat, rounded dome - NOT elongated!)
+  // - Mars (0.38g): 2.85 * R0 (broad rounded teardrop)
+  // - Earth (1g): 4.30 * R0 (tall slender teardrop)
+  const Hh = R0 * (2.0 + 2.30 * Math.pow(b, 2.6));
+
+  // Width (horizontal radius):
+  // - 0g: 1.0 * R0
+  // - Moon: 1.35 * R0 (widest! Dome expands horizontally due to slow expansion)
+  // - Mars: 1.05 * R0
+  // - Earth: 0.68 * R0 (buoyant acceleration narrows the column)
+  const domeExpansion = Math.sin(Math.pow(b, 0.6) * Math.PI);
+  const W0 = R0 * (1.0 + 0.38 * domeExpansion - 0.32 * b * b);
+
+  // Center elevation of the base zone:
+  const cy0 = y0 + R0 * 0.72 * (1 - b) + Hh * 0.38 * b;
+
+  // NASA fractions (Smooth & Continuous across all 0.0g - 1.0g without dropouts):
+  // Microgravity fraction: 1.0 at 0g, smoothly fades into dome as gravity rises
+  const microFrac = clamp(1 - b / 0.32, 0, 1);
+  // Moon gravity fraction: peaks at Moon (0.16g / b=0.40), low squat blue dome
+  const moonFrac = clamp(1 - Math.abs(b - 0.38) / 0.28, 0, 1) * (1 - microFrac * 0.55);
+  // Buoyant teardrop fraction: emerges above Moon gravity (b > 0.38)
+  const teardropFrac = clamp((b - 0.38) / 0.24, 0, 1);
+  // Soot incandescence fraction: 0g=0 (soot-free), Moon=tiny (pale apex), Mars=moderate, Earth=full
+  const sootFrac = Math.pow(clamp((b - 0.15) / 0.85, 0, 1), 1.8);
+
+  // Flow displacement in 3D (airflow lean)
+  const flowX = lean * 0.32;
+  const flowY = -lean * 0.06 * (1 - b);
+
+  // =========================================================================
+  // 2. VOLUMETRIC AMBIENT GLOW
+  // =========================================================================
+  const fc = P(flowX * 0.5, cy0, 0);
+  const glowR = (b < 0.25 ? R0 * 2.8 : Hh * 1.5) * fc[3];
+  const gl = cx.createRadialGradient(fc[0], fc[1], 0, fc[0], fc[1], glowR);
+
+  // Blue chemiluminescent glow (dominant in 0g and Moon)
+  const blueWeight = clamp(1.0 - 0.70 * b, 0.12, 1.0);
+  gl.addColorStop(0, `rgba(0, 190, 255, ${0.25 * sz * blueWeight})`);
+  gl.addColorStop(0.5, `rgba(20, 100, 240, ${0.10 * sz * blueWeight})`);
+  gl.addColorStop(1, "rgba(0, 40, 160, 0)");
+
+  // Warm incandescent glow (only when soot is present, i.e. Mars and Earth)
+  if (sootFrac > 0.02) {
+    gl.addColorStop(0, `rgba(255, 190, 50, ${0.22 * sz * sootFrac})`);
+    gl.addColorStop(0.4, `rgba(255, 110, 20, ${0.08 * sz * sootFrac})`);
+    gl.addColorStop(1, "rgba(180, 50, 0, 0)");
+  }
+  cx.globalCompositeOperation = "lighter";
+  cx.fillStyle = gl;
+  cx.fillRect(0, 0, W, H);
+
+  // =========================================================================
+  // 3. PURE MICROGRAVITY SPHERICAL BLUE FLAME (ISS / ~0g)
+  // =========================================================================
+  if (microFrac > 0.01) {
+    const c0 = P(flowX, cy0 + flowY, 0);
+    const rSphere = R0 * c0[3] * (1 + 0.012 * Math.sin(t * 2.5));
+
+    // A. Outer Limb-Brightened Reaction Shell (Thin glowing blue sphere envelope)
+    const shellGrad = cx.createRadialGradient(c0[0], c0[1], 0, c0[0], c0[1], rSphere);
+    shellGrad.addColorStop(0, `rgba(40, 150, 255, ${0.12 * microFrac})`);
+    shellGrad.addColorStop(0.65, `rgba(20, 130, 255, ${0.28 * microFrac})`);
+    shellGrad.addColorStop(0.86, `rgba(0, 220, 255, ${0.80 * microFrac})`); // Bright cyan limb
+    shellGrad.addColorStop(0.96, `rgba(15, 115, 255, ${0.92 * microFrac})`); // Outer reaction zone
+    shellGrad.addColorStop(1, "rgba(0, 70, 220, 0)");
+    cx.fillStyle = shellGrad;
+    cx.beginPath();
+    cx.arc(c0[0], c0[1], rSphere, 0, 6.2832);
+    cx.fill();
+
+    // B. Inner Translucent Blue Mantle (Soft, dim, darker inside)
+    const innerGrad = cx.createRadialGradient(c0[0], c0[1], 0, c0[0], c0[1], rSphere * 0.70);
+    innerGrad.addColorStop(0, `rgba(140, 220, 255, ${0.24 * microFrac})`);
+    innerGrad.addColorStop(0.7, `rgba(30, 140, 255, ${0.16 * microFrac})`);
+    innerGrad.addColorStop(1, "rgba(0, 90, 255, 0)");
+    cx.fillStyle = innerGrad;
+    cx.beginPath();
+    cx.arc(c0[0], c0[1], rSphere * 0.70, 0, 6.2832);
+    cx.fill();
+
+    // C. Forced Airflow Wake Envelope (NASA BASS-II rounded parabolic wake)
+    if (lean > 0.02) {
+      const wakeLen = lean * 2.0 * R0 * c0[3];
+      const wakeGrad = cx.createRadialGradient(c0[0] + wakeLen * 0.5, c0[1], 0, c0[0] + wakeLen * 0.5, c0[1], rSphere * 1.25);
+      wakeGrad.addColorStop(0, `rgba(0, 210, 255, ${0.35 * microFrac * lean})`);
+      wakeGrad.addColorStop(0.6, `rgba(20, 100, 255, ${0.22 * microFrac * lean})`);
+      wakeGrad.addColorStop(1, "rgba(0, 50, 200, 0)");
+      cx.fillStyle = wakeGrad;
+      cx.beginPath();
+      cx.ellipse(c0[0] + wakeLen * 0.4, c0[1], rSphere * (1 + lean * 0.55), rSphere * 0.9, 0, 0, 6.2832);
+      cx.fill();
+    }
+
+    // D. Electric Blue Chemiluminescent Anchor Ring at Wick Root
+    const wickP = P(0, y0 + 0.02, 0);
+    const ringW = 0.10 * sz * wickP[3];
+    const ringH = 0.045 * sz * wickP[3];
+    const ringGrad = cx.createRadialGradient(wickP[0], wickP[1], 0, wickP[0], wickP[1], ringW);
+    ringGrad.addColorStop(0, `rgba(0, 240, 255, ${0.90 * microFrac})`);
+    ringGrad.addColorStop(0.6, `rgba(20, 110, 255, ${0.55 * microFrac})`);
+    ringGrad.addColorStop(1, "rgba(0, 40, 200, 0)");
+    cx.fillStyle = ringGrad;
+    cx.beginPath();
+    cx.ellipse(wickP[0], wickP[1], ringW, ringH, 0, 0, 6.2832);
+    cx.fill();
+  }
+
+  // =========================================================================
+  // 4. LUNAR GRAVITY (0.16g) WIDE BLUNT BLUE DOME (NASA KC-135 CALIBRATION)
+  // =========================================================================
+  if (moonFrac > 0.03) {
+    const bp = P(flowX * 0.2, y0 + 0.03, 0);
+    const domeW = W0 * 1.05 * bp[3];
+    const domeH = Hh * 0.92 * bp[3]; // Low, squat height
+
+    // A. Wide Blue Hemispherical Reaction Shell (Quiescent, blunt dome)
+    const domeGrad = cx.createRadialGradient(bp[0], bp[1] - domeH * 0.45, 0, bp[0], bp[1] - domeH * 0.45, domeW);
+    domeGrad.addColorStop(0, `rgba(60, 170, 255, ${0.18 * moonFrac})`);
+    domeGrad.addColorStop(0.60, `rgba(20, 130, 255, ${0.38 * moonFrac})`);
+    domeGrad.addColorStop(0.85, `rgba(0, 220, 255, ${0.82 * moonFrac})`); // Glowing cyan dome flank
+    domeGrad.addColorStop(0.96, `rgba(10, 100, 245, ${0.88 * moonFrac})`);
+    domeGrad.addColorStop(1, "rgba(0, 50, 200, 0)");
+    cx.fillStyle = domeGrad;
+    cx.beginPath();
+    // Rounded arch: blunt mushroom top, wide base
+    cx.ellipse(bp[0], bp[1] - domeH * 0.42, domeW, domeH * 0.58, 0, 0, 6.2832);
+    cx.fill();
+
+    // B. Soft Blue Lower Skirt
+    const skirtGrad = cx.createRadialGradient(bp[0], bp[1] - domeH * 0.2, 0, bp[0], bp[1] - domeH * 0.2, domeW * 0.85);
+    skirtGrad.addColorStop(0, `rgba(120, 215, 255, ${0.30 * moonFrac})`);
+    skirtGrad.addColorStop(0.7, `rgba(20, 120, 255, ${0.22 * moonFrac})`);
+    skirtGrad.addColorStop(1, "rgba(0, 70, 220, 0)");
+    cx.fillStyle = skirtGrad;
+    cx.beginPath();
+    cx.ellipse(bp[0], bp[1] - domeH * 0.2, domeW * 0.85, domeH * 0.35, 0, 0, 6.2832);
+    cx.fill();
+
+    // C. Very Faint Pale Amber Soot Shimmer at the Apex (NASA: Dim diminished soot tip)
+    const apexP = P(flowX * 0.25, y0 + domeH * 0.72 / bp[3], 0);
+    const apexW = domeW * 0.32;
+    const apexH = domeH * 0.20;
+    const apexGrad = cx.createRadialGradient(apexP[0], apexP[1], 0, apexP[0], apexP[1], apexW);
+    apexGrad.addColorStop(0, `rgba(255, 215, 120, ${0.28 * moonFrac})`);
+    apexGrad.addColorStop(0.6, `rgba(255, 165, 60, ${0.15 * moonFrac})`);
+    apexGrad.addColorStop(1, "rgba(255, 120, 20, 0)");
+    cx.fillStyle = apexGrad;
+    cx.beginPath();
+    cx.ellipse(apexP[0], apexP[1], apexW, apexH, 0, 0, 6.2832);
+    cx.fill();
+
+    // D. Anchor Ring
+    const wickP = P(0, y0 + 0.02, 0);
+    const ringW = 0.12 * sz * wickP[3];
+    const ringH = 0.05 * sz * wickP[3];
+    const ringGrad = cx.createRadialGradient(wickP[0], wickP[1], 0, wickP[0], wickP[1], ringW);
+    ringGrad.addColorStop(0, `rgba(0, 230, 255, ${0.85 * moonFrac})`);
+    ringGrad.addColorStop(0.6, `rgba(20, 100, 255, ${0.50 * moonFrac})`);
+    ringGrad.addColorStop(1, "rgba(0, 40, 200, 0)");
+    cx.fillStyle = ringGrad;
+    cx.beginPath();
+    cx.ellipse(wickP[0], wickP[1], ringW, ringH, 0, 0, 6.2832);
+    cx.fill();
+  }
+
+  // =========================================================================
+  // 5. MARS (0.38g) & EARTH (1g) BUOYANT TEARDROP FLAMES
+  // =========================================================================
+  if (teardropFrac > 0.01) {
+    const isEarth = b > 0.85;
+    const flutterSpeed = 6 + 10 * b;
+    const flutterAmp = 0.015 + 0.035 * b;
+
+    // A. Blue Chemiluminescent Base Skirt (45% on Mars, 12% on Earth)
+    const blueHeightFrac = isEarth ? 0.14 : 0.42;
+    const bp = P(flowX * 0.15, y0 + 0.04, 0);
+    const blueSkirtW = W0 * 1.05 * bp[3];
+    const blueSkirtH = Hh * blueHeightFrac * bp[3];
+
+    const blueSkirtGrad = cx.createRadialGradient(bp[0], bp[1] - blueSkirtH * 0.4, 0, bp[0], bp[1] - blueSkirtH * 0.4, blueSkirtW);
+    blueSkirtGrad.addColorStop(0, `rgba(80, 190, 255, ${0.55 * teardropFrac})`);
+    blueSkirtGrad.addColorStop(0.65, `rgba(20, 120, 255, ${0.45 * teardropFrac})`);
+    blueSkirtGrad.addColorStop(0.92, `rgba(0, 210, 255, ${0.75 * teardropFrac})`);
+    blueSkirtGrad.addColorStop(1, "rgba(0, 40, 200, 0)");
+    cx.fillStyle = blueSkirtGrad;
+    cx.beginPath();
+    cx.ellipse(bp[0], bp[1] - blueSkirtH * 0.4, blueSkirtW, blueSkirtH, 0, 0, 6.2832);
+    cx.fill();
+
+    // B. Convective Particle Field for Soot & Combustion
+    for (const q of PR) {
+      const u = (q.s + t * (0.12 + 0.55 * b)) % 1;
+      const h = u;
+
+      // Profile: broad rounded teardrop on Mars, tall cusped teardrop on Earth
+      const shapePow = isEarth ? 0.65 : 0.52;
+      const fShape = Math.sin(3.1416 * Math.pow(h, shapePow)) * (1 - 0.42 * h);
+      const rad = W0 * fShape * q.r;
+      const an = q.a + t * 0.4 * b;
+      const fh = 1 + flutterAmp * Math.sin(t * flutterSpeed + q.a);
+      const sw = Math.sin(t * (flutterSpeed * 0.7) + q.s * 35) * 0.03 * b * h * h;
+
+      const tx = rad * Math.cos(an) + flowX * Hh * h * h * 0.6 + sw;
+      const ty = y0 + Hh * h * fh;
+      const tz = rad * Math.sin(an);
+      const pt = P(tx, ty, tz);
+
+      let pal, k, alpha;
+      if (h < blueHeightFrac) {
+        pal = COOL;
+        k = 0;
+        alpha = 0.06 * teardropFrac;
+      } else if (h < 0.68) {
+        // Core: Brilliant incandescent yellow
+        pal = WARM;
+        k = 1;
+        alpha = (isEarth ? 0.12 : 0.09) * teardropFrac;
+      } else {
+        // Tip: Luminous orange soot
+        pal = WARM;
+        k = 2;
+        alpha = (isEarth ? 0.14 : 0.10) * teardropFrac;
+      }
+
+      const fe = 0.85 + (0.5 + 0.9 * fShape - 0.85);
+      const r = (0.075 * sz * fe + 0.015) * pt[3] * q.z;
+      cx.globalAlpha = alpha;
+      cx.drawImage(pal[k], pt[0] - r, pt[1] - r, r * 2, r * 2);
+    }
+
+    // C. Central Incandescent Soot Core
+    const coreP = P(flowX * 0.25, y0 + Hh * (isEarth ? 0.35 : 0.30), 0);
+    const coreW = W0 * (isEarth ? 0.45 : 0.52) * coreP[3];
+    const coreH = Hh * (isEarth ? 0.45 : 0.38) * coreP[3];
+    cx.globalAlpha = (isEarth ? 0.92 : 0.75) * teardropFrac * sootFrac;
+    cx.drawImage(WARM[1], coreP[0] - coreW, coreP[1] - coreH, coreW * 2, coreH * 2);
+  }
+
+  cx.globalAlpha = 1;
+  cx.globalCompositeOperation = "source-over";
+}
+const sph0=b=>b<.3;
+function specks(t){if(S.f<=0)return;cx.fillStyle="rgba(255,255,255,.55)";SPECK.forEach(s=>{const x=((s[0]+t*S.f*.012)%3)-1.5,z=s[2];if(x*x+z*z>.55)return;const p=P(x,s[1],z);cx.beginPath();cx.arc(p[0],p[1],Math.max(.8,.006*p[3]),0,6.3);cx.fill()})}
+let last=0;
+function frame(ts){const t=ts/1000,dt=Math.min(.05,t-last);last=t;fit();basis();
+ ["b","sz","lean"].forEach(k=>M[k]+=(M.t[k]-M[k])*.08);
+ if(env.want!==env.cur&&!(env.prev&&env.t<1)){env.prev=env.cur;env.cur=env.want;env.t=0}if(env.t<1)env.t=Math.min(1,env.t+dt*1.6);
+ if(cam.auto)cam.th+=.0025;
+ room();chamber(t,true);burner();flame(t);specks(t);chamber(t,false);
+ const v=cx.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(0,0,0,.45)");cx.fillStyle=v;cx.fillRect(0,0,W,H);
+ requestAnimationFrame(frame)}
+let drag=null,pd=null;
+cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY};cam.auto=false;$("auto").classList.remove("on");$("auto").textContent="Auto-rotate: off";cv.setPointerCapture(e.pointerId)});
+cv.addEventListener("pointermove",e=>{if(!drag)return;cam.th-=(e.clientX-drag.x)*.008;cam.ph=clamp(cam.ph+(e.clientY-drag.y)*.005,-.05,.9);drag={x:e.clientX,y:e.clientY}});
+["pointerup","pointercancel"].forEach(n=>cv.addEventListener(n,()=>drag=null));
+cv.addEventListener("wheel",e=>{e.preventDefault();cam.d=clamp(cam.d+e.deltaY*.003,1.8,4.2)},{passive:false});
+ui();env.cur=env.want;requestAnimationFrame(frame);
+
+function playOrOpenVideo(el) {
+  const card = el.closest('.video-card');
+  const url = card.dataset.url;
+  const embed = card.dataset.embed;
+  if (window.location.protocol === 'file:') {
+    // Under file://, YouTube iframes are blocked by YouTube with Error 153.
+    // Opening directly on YouTube ensures instant playback with zero configuration error.
+    window.open(url, '_blank');
+  } else {
+    // Under http/https web servers, load the live interactive iframe player inline
+    el.innerHTML = '<iframe src="' + embed + '" title="NASA Combustion Video" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"></iframe>';
+  }
+}
+
+
+
+
+</script>
+</body></html>

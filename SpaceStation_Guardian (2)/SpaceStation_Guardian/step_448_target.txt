@@ -1,0 +1,203 @@
+        <section className="viewport">
+          <div className="view-head">
+            <div><span className="eyebrow">TACTICAL ORBITAL VIEW</span><h2>International Space Station</h2></div>
+            <div className="view-chip">
+              <span className={`green-dot ${active ? 'pulse-alert' : ''}`} style={active ? { background: '#ff3b30' } : {}} />
+              {active ? 'STRUCTURAL COLLAPSE ACTIVE' : '3D SCENE NOMINAL'}
+            </div>
+          </div>
+
+          <Canvas
+            camera={{ position: [45, 24, 52], fov: 45, near: 0.5, far: 2500 }}
+            dpr={[1, 1.8]}
+            gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+          >
+            <SpaceScene
+              selected={selected}
+              onSelect={setSelected}
+              active={active}
+              scenario={scenario}
+              severity={severity}
+              startedAt={eventStart}
+              alertModule={active ? selected : null}
+              modelUrl={modelUrl}
+            />
+          </Canvas>
+
+          {/* 3D Hub Cam: Tactical ISS Blast & Floating Space Debris Optical Feed */}
+          {showTacticalCam && (
+            <div className={`tactical-cam-box ${hubCamExpanded ? 'expanded' : ''} ${hubFullscreen ? 'fullscreen' : ''}`}>
+              <div className="tactical-cam-header">
+                <div className="cam-header-left">
+                  <span className="live-indicator">
+                    <span className="pulse-dot" style={{ background: active ? '#ff3b30' : '#45cda0' }} />
+                    {active ? 'BREACH IN PROGRESS' : 'HUB CAM // OPTICAL LOCK'}
+                  </span>
+                  <span className="cam-coords">{selectedModule.short} // T+{elapsed.toFixed(2)}s</span>
+                </div>
+                <div className="cam-header-actions">
+                  <div className="cam-mode-pills">
+                    <button
+                      className={`cam-mode-btn ${hubCamMode === 'interior' ? 'active' : ''}`}
+                      onClick={() => setHubCamMode('interior')}
+                      title="ISS Photogrammetry Interior 3D Model — Right-Click Move, Scroll Zoom"
+                    >
+                      🛸 ISS INTERIOR
+                    </button>
+                    <button
+                      className={`cam-mode-btn ${hubCamMode === '3d' ? 'active' : ''}`}
+                      onClick={() => setHubCamMode('3d')}
+                      title="3D International Space Station Blast & Floating Debris"
+                    >
+                      <Orbit size={11} /> EXTERIOR
+                    </button>
+                    <button
+                      className={`cam-mode-btn ${hubCamMode === 'cabin' ? 'active' : ''}`}
+                      onClick={() => setHubCamMode('cabin')}
+                      title="Procedural Cabin Cutaway View"
+                    >
+                      <Box size={11} /> CABIN
+                    </button>
+                  </div>
+                  <button
+                    className="cam-size-btn"
+                    onClick={() => setHubCamExpanded((v) => !v)}
+                    title={hubCamExpanded ? 'Standard Size' : 'Enlarge Hub Cam'}
+                  >
+                    {hubCamExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="tactical-cam-body">
+                {hubCamMode === 'interior' ? (
+                  /* ISS Photogrammetry 3D Interior — right-click moves, scroll zooms, left-click rotates */
+                  <div style={{ width: '100%', height: '100%', position: 'relative' }} onContextMenu={(e) => e.preventDefault()}>
+                    <Interior3DViewer
+                      active={active}
+                      startedAt={eventStart}
+                      scenario={scenario}
+                      severity={severity}
+                    />
+                    {/* Navigation hint badge */}
+                    <div className="interior-nav-badge">
+                      🖱️ <b>RIGHT CLICK</b>: MOVE &nbsp;•&nbsp; <b>LEFT CLICK</b>: LOOK &nbsp;•&nbsp; <b>SCROLL</b>: ZOOM
+                    </div>
+                    {/* Alarm overlay on blast */}
+                    {active && (
+                      <div className="interior-alarm-overlay">
+                        <span className="interior-alarm-text">⚠ DEPRESSURISATION BREACH DETECTED</span>
+                      </div>
+                    )}
+                  </div>
+                ) : hubCamMode === '3d' ? (
+                  <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                    <Canvas
+                      camera={{ position: [14, 8, 16], fov: 48, near: 0.1, far: 1000 }}
+                      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.3 }}
+                    >
+                      <HubCam3DScene
+                        selected={selected}
+                        active={active}
+                        scenario={scenario}
+                        severity={severity}
+                        startedAt={eventStart}
+                        modelUrl={modelUrl}
+                        camAngle={hubCamAngle}
+                        zoom={hubCamZoom}
+                      />
+                    </Canvas>
+
+                    {/* HUD Controls Overlay on 3D Cam */}
+                    <div className="hud-overlay-controls">
+                      <div className="hud-angle-group">
+                        <span className="hud-label">CAM:</span>
+                        {['tactical', 'orbit', 'chase'].map((angle) => (
+                          <button
+                            key={angle}
+                            className={`hud-sub-btn ${hubCamAngle === angle ? 'active' : ''}`}
+                            onClick={() => setHubCamAngle(angle)}
+                          >
+                            {angle.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="hud-zoom-group">
+                        <span className="hud-label">ZOOM:</span>
+                        {[1.0, 1.5, 2.5].map((z) => (
+                          <button
+                            key={z}
+                            className={`hud-sub-btn ${hubCamZoom === z ? 'active' : ''}`}
+                            onClick={() => setHubCamZoom(z)}
+                          >
+                            {z}×
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Reticle Target Overlay */}
+                    <div className={`hub-target-reticle ${active ? 'detonated' : ''}`}>
+                      <div className="reticle-corner top-left" />
+                      <div className="reticle-corner top-right" />
+                      <div className="reticle-corner bottom-left" />
+                      <div className="reticle-corner bottom-right" />
+                      <div className="reticle-tag">
+                        {active ? '⚠️ BLAST DETONATION // DEBRIS DISPERSION' : `TARGET: [${selectedModule.short}]`}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <InternalModuleViewer
+                    active={active}
+                    startedAt={eventStart}
+                    scenario={scenario}
+                    severity={severity}
+                    moduleName={selectedModule.name}
+                  />
+                )}
+
+                <div className="tactical-crosshair" />
+                <div className="tactical-grid-overlay" />
+                {active && <div className="tactical-glitch-overlay" />}
+              </div>
+
+              <div className="tactical-cam-footer">
+                <span className="hud-cause-tag">
+                  {active ? (
+                    `FRAGMENTS: 52 OBJECTS DRIFTING IN VACUUM // ${(14.2 * severity / 8).toFixed(1)} m/s`
+                  ) : (
+                    `TARGET: ${selectedModule.name.toUpperCase()} // SENSOR LOCKED`
+                  )}
+                </span>
+                <span className="fps-badge">
+                  {hubCamMode === 'interior' ? '🛸 ISS INTERIOR 3D' : hubCamMode === '3d' ? '3D EXTERIOR CAM' : 'CABIN CUTAWAY'}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="view-bottom">
+            <span><Crosshair size={13} /> DRAG TO ORBIT</span>
+            <span>SCROLL TO ZOOM</span>
+            <span>CLICK TO INSPECT MODULES</span>
+          </div>
+
+          {active && (
+            <div className="event-overlay">
+              <span className="pulse-dot" style={{ background: '#ff3b30' }} />
+              CATASTROPHIC DETONATION & STRUCTURAL DECONSTRUCTION
+              <small>PHOTOREALISTIC BLAST VFX & SYNCHRONIZED AUDIO ACTIVE</small>
+            </div>
+          )}
+
+          <div className="scene-controls">
+            <button onClick={toggleSound} title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'} style={soundEnabled ? { borderColor: '#55c6ed', color: '#55c6ed' } : {}}>
+              {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+            </button>
+            <button onClick={() => setShowTacticalCam((v) => !v)} title="Toggle Camera Monitor" style={showTacticalCam ? { borderColor: '#ffaa44', color: '#ffaa44' } : {}}>
+              <Camera size={15} />
+            </button>
+            <button onClick={pause} title="Pause"><Pause size={15} /></button>
+            <button onClick={start} title="Trigger Blast" style={active ? { borderColor: '#ff4422' } : {}}><Play size={15} /></button>
+            <button onClick={replay} title="Replay Blast"><RotateCcw size={15} /></button>
+          </div>
