@@ -158,7 +158,10 @@ If you prefer configuring it manually:
 
 Developed with heart, sleepless nights, and curiosity for the **NASA Space Apps Challenge**:
 
-- **Shivansh Patel** — Lead Architecture, Microgravity Dynamics & Full-Stack Integration
+- **Shivansh Patel** — Leader and developer
+- **Shourya Sharma** — Co-Leader and developer
+- **Dhruv Kaushal** — Graphic visualisation and developer
+- **Pranav Gupta** — Visualisation and ideatation
 - **Team Infonic** — Scientific Research, Hardware Curation & UI/UX Design
 
 ---
