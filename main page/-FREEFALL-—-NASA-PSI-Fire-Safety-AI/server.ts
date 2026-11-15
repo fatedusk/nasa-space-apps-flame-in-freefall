@@ -3365,11 +3365,23 @@ $$ Re = \frac{u \cdot L}{\nu} \quad \text{and} \quad Pe = \frac{u \cdot L}{D} $$
 // Serve frontend assets in production or mount Vite in dev
 async function startServer() {
   const rootProjectDir = path.resolve(__dirname, '..', '..');
+
+  // Root route '/' opens the Welcome / Description page first!
+  app.get('/', (_req, res) => {
+    res.sendFile(path.resolve(rootProjectDir, 'ignis final description page.html'));
+  });
+
   app.use(express.static(rootProjectDir));
 
   const distExists = fs.existsSync(path.resolve(__dirname, 'dist', 'index.html'));
   if (process.env.NODE_ENV === 'production' || distExists) {
+    app.use('/platform', express.static(path.resolve(__dirname, 'dist')));
     app.use(express.static(path.resolve(__dirname, 'dist')));
+
+    app.get(['/platform', '/platform/*', '/app', '/app/*'], (_req, res) => {
+      res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+    });
+
     app.get('*', (_req, res) => {
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });
