@@ -3362,15 +3362,142 @@ $$ Re = \frac{u \cdot L}{\nu} \quad \text{and} \quad Pe = \frac{u \cdot L}{D} $$
   };
 }
 
+// =========================================================================
+// SPACESTATION GUARDIAN DIGITAL TWIN INTEGRATED API & SIMULATION
+// =========================================================================
+let guardianSpeed = 1;
+let guardianScenario = 'impact';
+let guardianSeverity = 8;
+let guardianModule = 'destiny';
+let guardianActiveEvent: any = null;
+const guardianEventLogs: any[] = [];
+
+function computeGuardianTelemetry(elapsed: number, scenario = guardianScenario, severity = guardianSeverity) {
+  const s = severity / 10;
+  const pressureLoss = scenario === 'pressure' || scenario === 'impact' || scenario === 'combined';
+  const fire = scenario === 'fire' || scenario === 'combined';
+  const electrical = scenario === 'power' || scenario === 'combined';
+
+  const pressure = pressureLoss ? Math.max(0, 101.3 * Math.exp(-(0.0012 + 0.0035 * s) * elapsed)) : 101.3;
+  const temperature = 22 + (fire ? Math.min(65, (3.5 + 4.2 * s) * Math.log1p(elapsed / 14)) : 0) + (electrical ? Math.min(18, 2.8 * Math.log1p(elapsed / 20)) : 0);
+  const oxygen = Math.max(0, pressure * 0.2095);
+  const power = electrical || scenario === 'impact' ? Math.max(8, 100 - (5.5 + 6.5 * s) * Math.log1p(elapsed / 6)) : 100;
+  const hullIntegrity = Math.max(0, 100 - (s * 8.5 * Math.log1p(elapsed / 4)));
+
+  return {
+    pressure: +pressure.toFixed(1),
+    temperature: +temperature.toFixed(1),
+    oxygen: +oxygen.toFixed(1),
+    power: +power.toFixed(0),
+    hullIntegrity: +hullIntegrity.toFixed(1),
+    status: pressure < 60 ? 'CRITICAL' : pressure < 90 || temperature > 42 ? 'WARNING' : 'NOMINAL'
+  };
+}
+
+// 1. Health & Connection Ping API
+app.get('/api/health', (_req, res) => {
+  res.json({
+    ok: true,
+    service: 'SpaceStation Guardian Digital Twin Core',
+    status: 'ONLINE',
+    port: PORT,
+    uptime: +process.uptime().toFixed(1),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 2. Telemetry API
+app.get('/api/telemetry', (req, res) => {
+  const elapsed = parseFloat((req.query.elapsed as string) || '0');
+  const telemetry = computeGuardianTelemetry(elapsed);
+  res.json({ ok: true, telemetry, scenario: guardianScenario, severity: guardianSeverity });
+});
+
+app.post('/api/telemetry', (req, res) => {
+  const { elapsed = 0, scenario = guardianScenario, severity = guardianSeverity } = req.body;
+  const telemetry = computeGuardianTelemetry(elapsed, scenario, severity);
+  res.json({ ok: true, telemetry });
+});
+
+// 3. Speed API
+app.get('/api/speed', (_req, res) => {
+  res.json({ ok: true, speed: guardianSpeed });
+});
+
+app.post('/api/speed', (req, res) => {
+  const { speed } = req.body;
+  if (typeof speed === 'number' && speed > 0) {
+    guardianSpeed = speed;
+    return res.json({ ok: true, speed: guardianSpeed });
+  }
+  res.status(400).json({ ok: false, error: 'Invalid speed value' });
+});
+
+// 4. Detonate API
+app.post('/api/detonate', (req, res) => {
+  const { scenario = 'impact', severity = 8, module = 'destiny' } = req.body;
+  guardianScenario = scenario;
+  guardianSeverity = severity;
+  guardianModule = module;
+
+  const eventRecord = {
+    id: 'EVENT-' + Date.now().toString(36).toUpperCase(),
+    timestamp: new Date().toISOString(),
+    scenario,
+    severity,
+    epicenter: module,
+    telemetryAtDetonation: computeGuardianTelemetry(0, scenario, severity)
+  };
+
+  guardianActiveEvent = eventRecord;
+  guardianEventLogs.unshift(eventRecord);
+  if (guardianEventLogs.length > 25) guardianEventLogs.pop();
+
+  res.json({ ok: true, event: eventRecord });
+});
+
+// 5. Events API
+app.get('/api/events', (_req, res) => {
+  res.json({ ok: true, activeEvent: guardianActiveEvent, logs: guardianEventLogs });
+});
+
+// 6. Reset API
+app.post('/api/reset', (_req, res) => {
+  guardianActiveEvent = null;
+  res.json({ ok: true, message: 'Simulation state reset to nominal' });
+});
+
 // Serve frontend assets in production or mount Vite in dev
 async function startServer() {
   const rootProjectDir = path.resolve(__dirname, '..', '..');
+  const guardianDist = path.resolve(rootProjectDir, 'SpaceStation_Guardian (2)', 'SpaceStation_Guardian', 'space-station-guardian', 'frontend', 'dist');
+
+  // Reassemble photogrammetry 3D model (scene.bin) from parts if needed
+  try {
+    const sceneBinPath = path.resolve(guardianDist, 'models', 'scene.bin');
+    const part1 = path.resolve(rootProjectDir, 'SpaceStation_Guardian (2)', 'SpaceStation_Guardian', 'space-station-guardian', 'frontend', 'public', 'models', 'scene.bin.part1');
+    const part2 = path.resolve(rootProjectDir, 'SpaceStation_Guardian (2)', 'SpaceStation_Guardian', 'space-station-guardian', 'frontend', 'public', 'models', 'scene.bin.part2');
+    if (!fs.existsSync(sceneBinPath) && fs.existsSync(part1) && fs.existsSync(part2)) {
+      const modelsDir = path.dirname(sceneBinPath);
+      if (!fs.existsSync(modelsDir)) fs.mkdirSync(modelsDir, { recursive: true });
+      fs.writeFileSync(sceneBinPath, Buffer.concat([fs.readFileSync(part1), fs.readFileSync(part2)]));
+      console.log('Photogrammetry model (scene.bin) reassembled successfully.');
+    }
+  } catch (err) {
+    console.warn('Note on scene.bin reassembly:', err);
+  }
 
   // Root route '/' opens the Welcome / Description page first!
   app.get('/', (_req, res) => {
     res.sendFile(path.resolve(rootProjectDir, 'ignis final description page.html'));
   });
 
+  // SpaceStation Guardian Digital Twin direct route
+  app.get(['/guardian', '/guardian/*'], (_req, res) => {
+    res.sendFile(path.resolve(guardianDist, 'index.html'));
+  });
+
+  app.use(express.static(guardianDist));
   app.use(express.static(rootProjectDir));
 
   const distExists = fs.existsSync(path.resolve(__dirname, 'dist', 'index.html'));

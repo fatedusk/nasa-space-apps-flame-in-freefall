@@ -53,7 +53,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({ onNavigate }) => {
 
   const handleGoToBlastSim = () => {
     playCommandChirp();
-    window.open('http://localhost:5173', '_blank');
+    window.open('/guardian', '_blank');
   };
 
   return (
@@ -221,7 +221,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({ onNavigate }) => {
               <span>Launch Blast Simulation</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-            <span className="text-[11px] font-mono text-slate-400">Runs live on port 5173</span>
+            <span className="text-[11px] font-mono text-slate-400">Live 3D Digital Twin</span>
           </div>
         </section>
 

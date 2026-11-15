@@ -132,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
                   NASA Space Apps
                 </span>
                 <a
-                  href="http://localhost:5173"
+                  href="/guardian"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hidden lg:inline-flex items-center gap-1 text-[10px] font-mono text-[#ff7597] bg-[#1d0b19] px-2.5 py-0.5 rounded-full border border-[#ff2e7e]/40 hover:border-[#ff4d88] transition shrink-0"

@@ -160,7 +160,7 @@ export const PAGES_CONFIG: PageDefinition[] = [
     description: 'Cinematic station-scale blast, explosive decompression, and digital twin simulation scenarios.',
     component: WelcomePage,
     enabled: true,
-    externalUrl: 'http://localhost:5173',
+    externalUrl: '/guardian',
   },
 ];
 
